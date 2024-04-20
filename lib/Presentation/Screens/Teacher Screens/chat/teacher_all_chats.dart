@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 
 import '../../../../Data/Models/user.dart';
-import '../../Student Screens/chat/student_all_chats.dart';
+import '../../Student Screens/inside_bottom_bar/chat/student_all_chats.dart';
 import 'chat_details.dart';
 
 class TeacherAllChats extends StatefulWidget {

@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Constants/styles.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/All%20Request/student_all_requests.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/Home/home.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/Profile/profile.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/Settings/setting.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/chat/student_all_chats.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/inside_bottom_bar/All%20Request/student_all_requests.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/inside_bottom_bar/Home/home.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/inside_bottom_bar/Profile/profile.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/inside_bottom_bar/Settings/setting.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/inside_bottom_bar/chat/student_all_chats.dart';
 
-class BottomNavBarStudentScreen extends StatelessWidget {
+class BottomNavBarStudentScreen extends StatefulWidget {
   BottomNavBarStudentScreen({super.key});
-  PersistentTabController _persistentTabController =
-      PersistentTabController(initialIndex: 0);
+
+  @override
+  State<BottomNavBarStudentScreen> createState() =>
+      _BottomNavBarStudentScreenState();
+}
+
+class _BottomNavBarStudentScreenState extends State<BottomNavBarStudentScreen> {
+  int currentItem = 2;
   List<Widget> _screens = [
     SettingScreen(),
     ProfileScreen(),
@@ -19,53 +24,37 @@ class BottomNavBarStudentScreen extends StatelessWidget {
     StudentAllChats(),
     StudentAllRequestsPage(),
   ];
-  List<PersistentBottomNavBarItem> _items = [
-    PersistentBottomNavBarItem(
+
+  List<BottomNavigationBarItem> _items = [
+    BottomNavigationBarItem(
       icon: Icon(
         Icons.settings,
       ),
-      title: 'Setting',
-      activeColorSecondary: nextColor,
-      inactiveColorPrimary: Colors.grey,
+      label: 'Setting',
     ),
-    PersistentBottomNavBarItem(
+    BottomNavigationBarItem(
       icon: Icon(
         Icons.person,
       ),
-      title: 'Profile',
-      activeColorSecondary: nextColor,
-      inactiveColorPrimary: Colors.grey,
+      label: 'Profile',
     ),
-    PersistentBottomNavBarItem(
+    BottomNavigationBarItem(
       icon: Icon(
         Icons.home,
-        color: nextColor,
       ),
-      title: 'Home',
-      textStyle: TextStyle(color: nextColor),
-      activeColorPrimary: firstColor,
-      activeColorSecondary: nextColor,
-      inactiveColorPrimary: Colors.grey,
-      inactiveIcon: Icon(
-        Icons.home,
-        color: Colors.grey,
-      ),
+      label: 'Home',
     ),
-    PersistentBottomNavBarItem(
+    BottomNavigationBarItem(
       icon: Icon(
         Icons.chat,
       ),
-      title: 'Chats',
-      activeColorSecondary: nextColor,
-      inactiveColorPrimary: Colors.grey,
+      label: 'Chats',
     ),
-    PersistentBottomNavBarItem(
+    BottomNavigationBarItem(
       icon: Icon(
         Icons.request_page_outlined,
       ),
-      title: 'All Request',
-      activeColorSecondary: nextColor,
-      inactiveColorPrimary: Colors.grey,
+      label: 'All Request',
     ),
   ];
 
@@ -73,22 +62,36 @@ class BottomNavBarStudentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        bottomNavigationBar: PersistentTabView(
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {},
-            icon: Icon(Icons.add,color: nextColor,),
-            label: Text('Add',style: TextStyle(color: nextColor),),
-            backgroundColor: firstColor,
+        body: _screens[currentItem],
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {},
+          icon: Icon(
+            Icons.add,
+            color: nextColor,
           ),
-          context,
+          label: Text(
+            'Add',
+            style: TextStyle(color: nextColor),
+          ),
           backgroundColor: firstColor,
-          controller: _persistentTabController,
-          screens: _screens,
-          items: _items,
-          decoration: NavBarDecoration(
-            borderRadius: BorderRadius.zero,
+        ),
+        bottomNavigationBar: Theme(
+          data: Theme.of(context).copyWith(
+            canvasColor: firstColor,
+            primaryColor: nextColor,
           ),
-          navBarStyle: NavBarStyle.style15,
+          child: BottomNavigationBar(
+            backgroundColor: nextColor,
+            unselectedItemColor: Colors.grey,
+            showUnselectedLabels: true,
+            items: _items,
+            currentIndex: currentItem,
+            onTap: (value) {
+              setState(() {
+                currentItem = value;
+              });
+            },
+          ),
         ),
       ),
     );
