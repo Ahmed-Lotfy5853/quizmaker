@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/chat/student_all_chats.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/inside_bottom_bar/chat/student_all_chats.dart';
 
 import '../../../../Constants/Strings.dart';
 import '../../../../Data/Models/user.dart';
