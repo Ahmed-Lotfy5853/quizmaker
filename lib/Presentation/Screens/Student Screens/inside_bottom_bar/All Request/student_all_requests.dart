@@ -3,8 +3,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import '../../../../Constants/Strings.dart';
-import '../../Teacher Screens/teacher_all_requests.dart';
+import '../../../../../Constants/Strings.dart';
+import '../../../Teacher Screens/teacher_all_requests.dart';
 
 class StudentAllRequestsPage extends StatefulWidget {
   const StudentAllRequestsPage({super.key});

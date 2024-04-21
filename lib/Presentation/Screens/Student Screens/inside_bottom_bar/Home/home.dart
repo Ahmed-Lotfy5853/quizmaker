@@ -6,6 +6,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Constants/responsive.dart';
 import 'package:quiz_maker/Constants/styles.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/GroupDetails/group_details.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -137,7 +138,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildGroup(List<ModelGroup> dataGroup) {
     return ListView.builder(
       itemBuilder: (_, int index) => InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.pushNamed(context, studentGroupDetailScreen);
+        
+            },
         child: Card(
           child: ListTile(
             leading: CircleAvatar(

@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 
-import '../../../../Data/Models/user.dart';
-import '../../Teacher Screens/chat/chat_details.dart';
+import '../../../../../Data/Models/user.dart';
+import '../../../Teacher Screens/chat/chat_details.dart';
 
 class StudentAllChats extends StatefulWidget {
   const StudentAllChats({super.key});
