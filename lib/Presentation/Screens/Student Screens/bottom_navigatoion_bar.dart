@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Constants/styles.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/All%20Request/student_all_requests.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/Home/home.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/Profile/profile.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/Settings/setting.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/chat/student_all_chats.dart';
 
 import '../Teacher Screens/teacher_profile.dart';
+import 'inside_bottom_bar/All Request/student_all_requests.dart';
+import 'inside_bottom_bar/Home/home.dart';
+import 'inside_bottom_bar/Settings/setting.dart';
+import 'inside_bottom_bar/chat/student_all_chats.dart';
 
 class BottomNavBarStudentScreen extends StatelessWidget {
   BottomNavBarStudentScreen({super.key});

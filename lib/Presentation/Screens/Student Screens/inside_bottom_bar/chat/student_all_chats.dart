@@ -22,7 +22,7 @@ class _StudentAllChatsState extends State<StudentAllChats> {
       MediaQuery.textScalerOf(context).scale(fontSize);
   List<ChatModel> allChats = [
     ChatModel(
-        user: User(
+        user: UserModel(
             name: 'Ahmed',
             email: 'aa@a.com',
             uid: 'hjdshbjk',
@@ -32,20 +32,20 @@ class _StudentAllChatsState extends State<StudentAllChats> {
         lastMessage: MessageModel(
             message: 'hello',
             time: DateTime.now().toString().substring(0, 19),
-            sender: User(
+            sender: UserModel(
                 name: 'Mohamed',
                 email: 'aa@a.com',
                 uid: 'hjdshbjk',
                 photoUrl: 'jdsk',
                 isTeacher: true),
-            receiver: User(
+            receiver: UserModel(
                 name: 'Mohamed',
                 email: 'aa@a.com',
                 uid: 'hjdshbjk',
                 photoUrl: 'jdsk',
                 isTeacher: true))),
     ChatModel(
-        user: User(
+        user: UserModel(
             name: 'Ahmed',
             email: 'aa@a.com',
             uid: 'hjdshbjk',
@@ -55,13 +55,13 @@ class _StudentAllChatsState extends State<StudentAllChats> {
         lastMessage: MessageModel(
             message: 'hello',
             time: DateTime.now().toString().substring(0, 19),
-            sender: User(
+            sender: UserModel(
                 name: 'Mohamed',
                 email: 'aa@a.com',
                 uid: 'hjdshbjk',
                 photoUrl: 'jdsk',
                 isTeacher: true),
-            receiver: User(
+            receiver: UserModel(
                 name: 'Mohamed',
                 email: 'aa@a.com',
                 uid: 'hjdshbjk',
@@ -177,8 +177,8 @@ class _StudentAllChatsState extends State<StudentAllChats> {
 }
 
 class MessageModel {
-  User sender;
-  User receiver;
+  UserModel sender;
+  UserModel receiver;
   String message;
   String time;
 
@@ -191,7 +191,7 @@ class MessageModel {
 }
 
 class ChatModel {
-  User user;
+  UserModel user;
   String chatId;
   // List<MessageModel> messages;
   MessageModel lastMessage;

@@ -20,9 +20,9 @@ class _TeacherAllChatsState extends State<TeacherAllChats> {
   double textFontSize (BuildContext context,double fontSize)=> MediaQuery.textScalerOf(context).scale(fontSize);
   List<ChatModel> allChats=[
 ChatModel(user:
-User(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: onboardAsset, isTeacher: true), chatId:'hjsdhj' , lastMessage: MessageModel(message: 'hello', time: DateTime.now().toString().substring(0,19), sender: User(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: 'jdsk', isTeacher: true), receiver: User(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: 'jdsk', isTeacher: true))) ,
+UserModel(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: onboardAsset, isTeacher: true), chatId:'hjsdhj' , lastMessage: MessageModel(message: 'hello', time: DateTime.now().toString().substring(0,19), sender: UserModel(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: 'jdsk', isTeacher: true), receiver: UserModel(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: 'jdsk', isTeacher: true))) ,
 ChatModel(user:
-User(name: 'Ahmed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: onboardAsset, isTeacher: true), chatId:'hjsdhj' , lastMessage: MessageModel(message: 'hello', time: DateTime.now().toString().substring(0,19), sender: User(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: 'jdsk', isTeacher: true), receiver: User(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: 'jdsk', isTeacher: true))) ,
+UserModel(name: 'Ahmed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: onboardAsset, isTeacher: true), chatId:'hjsdhj' , lastMessage: MessageModel(message: 'hello', time: DateTime.now().toString().substring(0,19), sender: UserModel(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: 'jdsk', isTeacher: true), receiver: UserModel(name: 'Mohamed', email: 'aa@a.com', uid: 'hjdshbjk', photoUrl: 'jdsk', isTeacher: true))) ,
 
   ];
   bool isTeacherSelected=false;

@@ -6,9 +6,13 @@ class Auth_Repository {
 
   Auth_Repository(this.auth_WebServices);
 
-  Future<void> signUp(String email, String password) async {
+  Future<String?> signUp(String email, String password) async {
     try {
-      await auth_WebServices.signUp(email, password);
+     String? uId = await auth_WebServices.signUp(email, password);
+     if(uId != null) {
+       await auth_WebServices.getProfile(uId);
+     }
+     return uId;
     } catch (e) {
       rethrow;
     }
@@ -30,11 +34,13 @@ class Auth_Repository {
     }
   }
 
-  Future<void> setAccountType(bool isTeacher) async {
+  Future<void> setAccountType(String name,String email,String uid,bool isTeacher) async {
     try {
       await auth_WebServices.setAccountType(isTeacher);
     } catch (e) {
       rethrow;
     }
   }
+
+
 }

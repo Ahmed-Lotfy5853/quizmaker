@@ -21,7 +21,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 1 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -29,7 +29,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 2 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -37,7 +37,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 3 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -45,7 +45,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 1 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -53,7 +53,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 1 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -61,7 +61,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 1 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -69,7 +69,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 1 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -77,7 +77,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 1 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -85,7 +85,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 1 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
     Group(
       id: "123",
@@ -93,7 +93,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       description: "Group 1 description",
       teachers: ["Dr. John", "Dr. Smith"],
       createdBy: "Dr. Smith",
-      image: 'assets/images/profile_place_holder.png',
+      image: 'assets/images/profile_place_holder.png', createdAt: '',
     ),
   ];
   bool isSearching = false;
@@ -309,8 +309,8 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                         leading: CircleAvatar(
                           radius: h/ 27.5,
                           backgroundImage: Image.asset(isSearching
-                                  ? searchedGroups[index].image
-                                  : groups[index].image)
+                                  ? searchedGroups[index].image!
+                                  : groups[index].image!)
                               .image,
                         ),
                         title: Text(
@@ -320,8 +320,8 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                           style: TextStyle(fontWeight: FontWeight.bold , fontSize: bigText),
                         ),
                         subtitle: Text(isSearching
-                            ? searchedGroups[index].description
-                            : groups[index].description , style: TextStyle(fontSize: smallText),),
+                            ? searchedGroups[index].description!
+                            : groups[index].description! , style: TextStyle(fontSize: smallText),),
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () {
                           Navigator.pushNamed(context, groupDetailsViewScreen);

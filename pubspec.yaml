@@ -30,6 +30,7 @@ dependencies:
   flutter_native_splash: ^2.4.0
   shared_preferences: ^2.2.2
   cloud_firestore: ^4.16.0
+  fluttertoast: ^8.2.5
   firebase_auth: ^4.19.0
   firebase_core: ^2.28.0
   flutter_bloc: ^8.1.5

@@ -17,7 +17,7 @@ class _GroupDetailsViewState extends State<GroupDetailsView> {
     description: "Group 1 description try to write a long description for this group to see how it will look like",
     teachers: ["Dr. John", "Dr. Smith"],
     createdBy: "Dr. Smith",
-    image: 'assets/images/profile_place_holder.png',
+    image: 'assets/images/profile_place_holder.png', createdAt: '',
   );
 
   @override
@@ -57,7 +57,7 @@ class _GroupDetailsViewState extends State<GroupDetailsView> {
                 ),
                 child: Center(
                   child: Text(
-                    group.description,
+                    group.description??'',
                     style: TextStyle(fontSize: 20),
                     textAlign: TextAlign.center,
                   ),

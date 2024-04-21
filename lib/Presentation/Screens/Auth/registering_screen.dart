@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_maker/Bussiness%20Logic/Cubit/Auth/auth_cubit.dart';
@@ -566,9 +568,10 @@ class _Register_ScreenState extends State<Register_Screen> {
     );
   }
 
-  void submitLogin() {
-    Navigator.pushNamed(context, BottomNavStudentScreen);
+  void submitLogin()async {
     if (login_form_key.currentState!.validate()) {
+
+
       //   isTeacher?Navigator.pushNamed(context, teacherHomeScreen):Navigator.pushNamed(context, BottomNavStudentScreen);
 // Navigator.push(context, MaterialPageRoute(builder: (context)=>
 // PostCreate()
@@ -577,18 +580,16 @@ class _Register_ScreenState extends State<Register_Screen> {
   body: TeacherAllChats(),
 )*/
 //))  ;
-      /* BlocProvider.of<Auth_Cubit>(context)
-          .login(_emailController.text, _passwordController.text);*/
+       BlocProvider.of<Auth_Cubit>(context)
+          .login(_emailController.text.trim(), _passwordController.text.trim());
     }
   }
 
   void submitRegister() {
     if (register_form_key.currentState!.validate()) {
-      /*
       BlocProvider.of<Auth_Cubit>(context)
-          .signUp(_emailController.text, _passwordController.text, isTeacher);
+          .signUp(_usernameController.text.trim(),_emailController.text.trim(), _passwordController.text.trim(), isTeacher);
 
-       */
       isTeacher
           ? Navigator.pushNamed(context, teacherHomeScreen)
           : Navigator.pushNamed(context, BottomNavStudentScreen);

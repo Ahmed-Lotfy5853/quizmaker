@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Data/Web%20Services/Auth/auth_webservices.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/GroupDetails/group_details.dart';
 import 'package:quiz_maker/Presentation/Screens/Student%20Screens/bottom_navigatoion_bar.dart';
 import 'package:quiz_maker/Presentation/Screens/onboarding_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,6 +47,8 @@ class App_Router {
         return MaterialPageRoute(builder: (_) => GroupDetailsView());
     case (addQuestions):
         return MaterialPageRoute(builder: (_) => Add_Questions());
+      case (studentGroupDetailScreen):
+        return MaterialPageRoute(builder: (_) => StudentGroupDetails());
 
       case (createQuizScreen):
         return MaterialPageRoute(builder: (_) => Create_Quiz());

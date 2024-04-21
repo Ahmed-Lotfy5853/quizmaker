@@ -10,10 +10,11 @@ class Auth_Cubit extends Cubit<AuthState> {
 
   final Auth_Repository auth_Repository;
 
- Future<void> signUp(String email, String password , bool isTeacher) async {
+ Future<void> signUp(String name,String email, String password , bool isTeacher) async {
     emit(AuthLoading());
-    await auth_Repository.signUp(email, password);
-    await auth_Repository.setAccountType(isTeacher);
+   var uId = await auth_Repository.signUp(email, password);
+   if(uId != null)
+    await auth_Repository.setAccountType(name,email,uId,isTeacher);
     emit(AuthSuccess());
   }
 

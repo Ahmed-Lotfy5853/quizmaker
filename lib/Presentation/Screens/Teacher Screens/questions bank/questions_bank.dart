@@ -17,88 +17,12 @@ class _Questions_BankState extends State<Questions_Bank> {
   bool isSearch = false;
   List<Question> questions = [
     Question(
-      "What is the capital of France?",
-      [
-        {"answer": "Paris", "isCorrect": true},
-        {"answer": "London", "isCorrect": false},
-        {"answer": "Berlin", "isCorrect": false},
-        {"answer": "Madrid", "isCorrect": false},
-      ],
+
+     question: "What is the capital of France?", answers: [
+"Paris","London","Berlin","Madrid"
+    ], correctAnswer: 0, level: 'easy',
     ),
-    Question(
-      "What is the capital of France?",
-      [
-        {"answer": "Paris", "isCorrect": true},
-        {"answer": "London", "isCorrect": false},
-        {"answer": "Berlin", "isCorrect": false},
-        {"answer": "Madrid", "isCorrect": false},
-      ],
-    ),
-    Question(
-      "What is the capital of France?",
-      [
-        {"answer": "Paris", "isCorrect": true},
-        {"answer": "London", "isCorrect": false},
-        {"answer": "Berlin", "isCorrect": false},
-        {"answer": "Madrid", "isCorrect": false},
-      ],
-    ),
-    Question(
-      "What is the capital of France?",
-      [
-        {"answer": "Paris", "isCorrect": true},
-        {"answer": "London", "isCorrect": false},
-        {"answer": "Berlin", "isCorrect": false},
-        {"answer": "Madrid", "isCorrect": false},
-      ],
-    ),
-    Question(
-      "What is the capital of France?",
-      [
-        {"answer": "Paris", "isCorrect": true},
-        {"answer": "London", "isCorrect": false},
-        {"answer": "Berlin", "isCorrect": false},
-        {"answer": "Madrid", "isCorrect": false},
-      ],
-    ),
-    Question(
-      "What is the capital of France?",
-      [
-        {"answer": "Paris", "isCorrect": true},
-        {"answer": "London", "isCorrect": false},
-        {"answer": "Berlin", "isCorrect": false},
-        {"answer": "Madrid", "isCorrect": false},
-      ],
-    ),
-    Question(
-      "What is the largest country in the world?",
-      [
-        {"answer": "Russia", "isCorrect": false},
-        {"answer": "Canada", "isCorrect": false},
-        {"answer": "China", "isCorrect": true},
-      ],
-    ),
-    Question(
-      "What is the largest country in the world?",
-      [
-        {"answer": "Russia", "isCorrect": false},
-        {"answer": "Canada", "isCorrect": false},
-        {"answer": "China", "isCorrect": true},
-      ],
-    ),
-    Question(
-      "What is the largest country in the world?",
-      [
-        {"answer": "true", "isCorrect": true},
-        {"answer": "false", "isCorrect": false},
-      ],
-    ),Question(
-      "What is the largest country in the world?",
-      [
-        {"answer": "true", "isCorrect": true},
-        {"answer": "false", "isCorrect": false},
-      ],
-    ),
+
   ];
 
   List<Question> searchedQuestions = [];
@@ -280,11 +204,11 @@ class _Questions_BankState extends State<Questions_Bank> {
                                   chars[idx] +
                                       ". " +
                                       searchedQuestions[index].answers[idx]
-                                      ['answer'],
+                                      ,
                                   style: TextStyle(
                                       fontSize: smallerTextFontsize,
-                                      color: searchedQuestions[index].answers[idx]
-                                      ['isCorrect']
+                                      color: idx== searchedQuestions[index].correctAnswer
+
                                           ? Colors.green
                                           : Colors.red),
                                 ),
@@ -324,11 +248,11 @@ class _Questions_BankState extends State<Questions_Bank> {
                                         chars[idx] +
                                             ". " +
                                             questions[index].answers[idx]
-                                                ['answer'],
+                                                ,
                                         style: TextStyle(
                                             fontSize: smallerTextFontsize,
-                                            color: questions[index].answers[idx]
-                                                    ['isCorrect']
+                                            color: idx==questions[index].correctAnswer
+
                                                 ? Colors.green
                                                 : Colors.red),
                                       ),
