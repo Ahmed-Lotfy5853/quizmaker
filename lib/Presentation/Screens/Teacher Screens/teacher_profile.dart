@@ -118,7 +118,7 @@ class _TeacherProfileState extends State<TeacherProfile> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
               child: Container(
-                height: height / 3,
+                height: isEditing ? height / 1.5 : height / 3,
                 width: width,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -152,125 +152,118 @@ class _TeacherProfileState extends State<TeacherProfile> {
                           ),
                         ),
                       ),
-                      Row(
+                      Column(
                         children: [
-                          Column(
-                            children: [
-                              SizedBox(
-                                height: 70,
-                              ),
-                              Text(
-                                "Profile",
-                                style: TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.bold),
-                              ),
-                              CircleAvatar(
-                                radius: 50,
-                                backgroundImage: Image.asset(
-                                        "assets/images/profile_place_holder.png")
-                                    .image,
-                              ),
-                            ],
+                          SizedBox(
+                            height: 70,
                           ),
-                          Column(
-                            children: [
-                              SizedBox(
-                                height: 70,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 15),
-                                child: SizedBox(
-                                  width: width / 2,
-                                  child: TextFormField(
-                                    controller: nameController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Name',
-                                      hintStyle: TextStyle(
-                                        color: Colors.tealAccent,
-                                      ),
-                                      prefixIcon: Icon(
-                                        Icons.person_outline,
-                                        color: Colors.tealAccent,
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.tealAccent,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.tealAccent,
-                                        ),
-                                      ),
+                          Text(
+                            "Profile",
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.bold),
+                          ),
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: Image.asset(
+                                    "assets/images/profile_place_holder.png")
+                                .image,
+                          ),
+                          SizedBox(
+                            height: 70,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: SizedBox(
+                              width: width / 2,
+                              child: TextFormField(
+                                controller: nameController,
+                                decoration: const InputDecoration(
+                                  hintText: 'Name',
+                                  hintStyle: TextStyle(
+                                    color: Colors.tealAccent,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.person_outline,
+                                    color: Colors.tealAccent,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.tealAccent,
                                     ),
-                                    validator: (value) {
-                                      if (value == null ||
-                                          value.isEmpty ||
-                                          value.length < 4) {
-                                        return 'Please enter a valid name';
-                                      }
-                                      return null;
-                                    },
-                                    onChanged: (value) {},
-                                    cursorColor: Colors.white,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.tealAccent,
                                     ),
                                   ),
                                 ),
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      value.length < 4) {
+                                    return 'Please enter a valid name';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {},
+                                cursorColor: Colors.white,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
                               ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                                child: SizedBox(
-                                  width: width / 2,
-                                  child: TextFormField(
-                                    controller: emailController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Email',
-                                      hintStyle: TextStyle(
-                                        color: Colors.tealAccent,
-                                      ),
-                                      prefixIcon: Icon(
-                                        Icons.email_outlined,
-                                        color: Colors.tealAccent,
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.tealAccent,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.tealAccent,
-                                        ),
-                                      ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                            child: SizedBox(
+                              width: width / 2,
+                              child: TextFormField(
+                                controller: emailController,
+                                decoration: const InputDecoration(
+                                  hintText: 'Email',
+                                  hintStyle: TextStyle(
+                                    color: Colors.tealAccent,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.email_outlined,
+                                    color: Colors.tealAccent,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.tealAccent,
                                     ),
-                                    validator: (value) {
-                                      if (value == null ||
-                                          value.isEmpty ||
-                                          !value.contains('@') ||
-                                          !value.contains('.')) {
-                                        return 'Please enter a valid email address';
-                                      }
-                                      return null;
-                                    },
-                                    onChanged: (value) {},
-                                    cursorColor: Colors.white,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.tealAccent,
                                     ),
                                   ),
                                 ),
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      !value.contains('@') ||
+                                      !value.contains('.')) {
+                                    return 'Please enter a valid email address';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {},
+                                cursorColor: Colors.white,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
                               ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
+
                     ],
                   ),
                 ),

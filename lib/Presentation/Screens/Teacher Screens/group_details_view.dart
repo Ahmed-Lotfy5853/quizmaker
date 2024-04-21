@@ -39,6 +39,7 @@ class _GroupDetailsViewState extends State<GroupDetailsView> {
         backgroundColor: Colors.green,
         centerTitle: true,
         elevation: 1,
+        iconTheme: IconThemeData(color: Colors.white, size: 30),
       ),
       body: Container(
         child: Column(
@@ -71,7 +72,7 @@ class _GroupDetailsViewState extends State<GroupDetailsView> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-
+                      Navigator.pushNamed(context, createQuizScreen );
                     },
                     child: Container(
                       height: height / 12,

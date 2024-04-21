@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Data/Models/question.dart';
 
 class Questions_Bank extends StatefulWidget {
@@ -203,7 +204,7 @@ class _Questions_BankState extends State<Questions_Bank> {
           children: [
             GestureDetector(
               onTap: () {
-                print("add new question");
+                Navigator.pushNamed(context, addQuestions);
               },
               child: Container(
                 height: 80,

@@ -21,7 +21,7 @@ class _Register_ScreenState extends State<Register_Screen> {
   bool showPassword = true;
   bool isLogin = true;
   bool isTeacher = false;
-  String ?_selectedAccountType ;
+  String? _selectedAccountType;
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +42,14 @@ class _Register_ScreenState extends State<Register_Screen> {
           ),
         ),
         child: Padding(
-          padding:  EdgeInsets.only(
-              left: width / 26, right: width / 26, top: height / 10.3, bottom: height / 16.5),
-          child: isLogin ? buildLoginForm(height, width , textFontsize) : buildRegisteringForm(height, width , textFontsize),
+          padding: EdgeInsets.only(
+              left: width / 26,
+              right: width / 26,
+              top: height / 10.3,
+              bottom: height / 16.5),
+          child: isLogin
+              ? buildLoginForm(height, width, textFontsize)
+              : buildRegisteringForm(height, width, textFontsize),
         ),
       ),
     );
@@ -62,7 +67,7 @@ class _Register_ScreenState extends State<Register_Screen> {
     return RegExp(r'^(?=.*[a-zA-Z])(?=.*\d).+$').hasMatch(value);
   }
 
-  buildLoginForm(double height, double width , double text) {
+  buildLoginForm(double height, double width, double text) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,14 +81,14 @@ class _Register_ScreenState extends State<Register_Screen> {
                   fit: BoxFit.cover,
                 )),
           ),
-           SizedBox(
-            height: height / 27.5 ,
+          SizedBox(
+            height: height / 27.5,
           ),
           Text(
             "Log in",
             style: TextStyle(fontSize: text, color: Colors.white),
           ),
-           SizedBox(
+          SizedBox(
             height: height / 41.25,
           ),
           Form(
@@ -199,7 +204,7 @@ class _Register_ScreenState extends State<Register_Screen> {
                   color: Colors.tealAccent,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child:  Center(
+                child: Center(
                     child: Text(
                   "Log in",
                   style: TextStyle(
@@ -225,7 +230,6 @@ class _Register_ScreenState extends State<Register_Screen> {
                   setState(() {
                     isLogin = false;
                   });
-
                 },
                 child: const Text(
                   "Register",
@@ -239,7 +243,7 @@ class _Register_ScreenState extends State<Register_Screen> {
     );
   }
 
-  buildRegisteringForm(double height, double width , double text) {
+  buildRegisteringForm(double height, double width, double text) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,14 +261,13 @@ class _Register_ScreenState extends State<Register_Screen> {
           SizedBox(
             height: height / 41.25,
           ),
-           Text(
+          Text(
             "Register",
             style: TextStyle(fontSize: text, color: Colors.white),
           ),
           SizedBox(
-              height: height / 41.25,
+            height: height / 41.25,
           ),
-
           Form(
             key: register_form_key,
             child: Column(
@@ -273,24 +276,32 @@ class _Register_ScreenState extends State<Register_Screen> {
                   value: _selectedAccountType,
                   onChanged: (value) {
                     setState(() {
+                      if (value == 'Teacher') {
+                        isTeacher = true;
+                      } else {
+                        isTeacher = false;
+                      }
                       _selectedAccountType = value!;
                     });
                   },
                   items: ['Teacher', 'Student']
                       .map((type) => DropdownMenuItem(
-                    value: type,
-                    child: Text(type,style: TextStyle(
-                      color: _selectedAccountType == type ? Colors.tealAccent : Colors.black
-                    ),),
-                  ))
+                            value: type,
+                            child: Text(
+                              type,
+                              style: TextStyle(
+                                  color: _selectedAccountType == type
+                                      ? Colors.tealAccent
+                                      : Colors.black),
+                            ),
+                          ))
                       .toList(),
-                  style:  TextStyle(
+                  style: TextStyle(
                     color: Colors.tealAccent,
                     fontSize: text,
                   ),
                   decoration: InputDecoration(
                     hintText: 'Account Type',
-
                     hintStyle: TextStyle(
                       color: Colors.tealAccent,
                     ),
@@ -304,7 +315,6 @@ class _Register_ScreenState extends State<Register_Screen> {
                         color: Colors.tealAccent,
                       ),
                     ),
-
                   ),
                 ),
 
@@ -338,11 +348,14 @@ class _Register_ScreenState extends State<Register_Screen> {
                     if (value == null || value.isEmpty || value.length < 4) {
                       return 'Username must be at least 4 characters long';
                     }
+                    if (_selectedAccountType == null) {
+                      return 'please select an account type';
+                    }
                     return null;
                   },
                   onChanged: (value) {},
                   cursorColor: Colors.white,
-                  style:  TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: text,
                   ),
@@ -384,12 +397,12 @@ class _Register_ScreenState extends State<Register_Screen> {
                   },
                   onChanged: (value) {},
                   cursorColor: Colors.white,
-                  style:  TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: text,
                   ),
                 ),
-                 SizedBox(
+                SizedBox(
                   height: height / 41.25,
                 ),
                 // password field
@@ -435,7 +448,7 @@ class _Register_ScreenState extends State<Register_Screen> {
                   },
                   onChanged: (value) {},
                   cursorColor: Colors.white,
-                  style:  TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: text,
                   ),
@@ -452,8 +465,8 @@ class _Register_ScreenState extends State<Register_Screen> {
                 submitRegister();
               },
               child: Container(
-                height: height /12,
-                width: width/2,
+                height: height / 12,
+                width: width / 2,
                 decoration: BoxDecoration(
                   color: Colors.tealAccent,
                   borderRadius: BorderRadius.circular(10),
@@ -509,9 +522,6 @@ class _Register_ScreenState extends State<Register_Screen> {
           children: [
             GestureDetector(
               onTap: () {
-                setState(() {
-                  isTeacher = false;
-                });
                 Navigator.pop(context);
               },
               child: Container(
@@ -532,9 +542,6 @@ class _Register_ScreenState extends State<Register_Screen> {
             ),
             GestureDetector(
               onTap: () {
-                setState(() {
-                  isTeacher = true;
-                });
                 Navigator.pop(context);
               },
               child: Container(
@@ -562,24 +569,29 @@ class _Register_ScreenState extends State<Register_Screen> {
   void submitLogin() {
     Navigator.pushNamed(context, BottomNavStudentScreen);
     if (login_form_key.currentState!.validate()) {
-   //   isTeacher?Navigator.pushNamed(context, teacherHomeScreen):Navigator.pushNamed(context, BottomNavStudentScreen);
+      //   isTeacher?Navigator.pushNamed(context, teacherHomeScreen):Navigator.pushNamed(context, BottomNavStudentScreen);
 // Navigator.push(context, MaterialPageRoute(builder: (context)=>
 // PostCreate()
- /*   Scaffold(
+      /*   Scaffold(
   // body: TeacherAllRequestsPage(),
   body: TeacherAllChats(),
 )*/
 //))  ;
-     /* BlocProvider.of<Auth_Cubit>(context)
+      /* BlocProvider.of<Auth_Cubit>(context)
           .login(_emailController.text, _passwordController.text);*/
     }
   }
 
   void submitRegister() {
     if (register_form_key.currentState!.validate()) {
+      /*
       BlocProvider.of<Auth_Cubit>(context)
           .signUp(_emailController.text, _passwordController.text, isTeacher);
-   //isTeacher?Navigator.pushNamed(context, teacherHomeScreen):Navigator.pushNamed(context, BottomNavStudentScreen);
+
+       */
+      isTeacher
+          ? Navigator.pushNamed(context, teacherHomeScreen)
+          : Navigator.pushNamed(context, BottomNavStudentScreen);
     }
   }
 }

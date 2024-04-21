@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Data/Models/group.dart';
+import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/teacher_profile.dart';
 
 class TeacherHomePage extends StatefulWidget {
   const TeacherHomePage({super.key});
@@ -112,7 +113,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       buildGroupsScreen(h, w , smallerTextFontsize, bigTextFontsize),
       Icon(Icons.sync_outlined),
       Icon(Icons.chat),
-      buildProfileScreen(),
+      TeacherProfile(),
     ];
     return Scaffold(
       extendBody: true,
@@ -322,7 +323,9 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                             ? searchedGroups[index].description
                             : groups[index].description , style: TextStyle(fontSize: smallText),),
                         trailing: Icon(Icons.arrow_forward_ios),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, groupDetailsViewScreen);
+                        },
                       );
                     },
                     separatorBuilder: (context, index) {

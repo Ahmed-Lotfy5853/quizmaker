@@ -8,13 +8,16 @@ import 'package:quiz_maker/Presentation/Screens/Student%20Screens/Profile/profil
 import 'package:quiz_maker/Presentation/Screens/Student%20Screens/Settings/setting.dart';
 import 'package:quiz_maker/Presentation/Screens/Student%20Screens/chat/student_all_chats.dart';
 
+import '../Teacher Screens/teacher_profile.dart';
+
 class BottomNavBarStudentScreen extends StatelessWidget {
   BottomNavBarStudentScreen({super.key});
   PersistentTabController _persistentTabController =
       PersistentTabController(initialIndex: 0);
   List<Widget> _screens = [
     SettingScreen(),
-    ProfileScreen(),
+    TeacherProfile(),
+    // ProfileScreen(),
     HomeScreen(),
     StudentAllChats(),
     StudentAllRequestsPage(),

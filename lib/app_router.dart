@@ -10,7 +10,11 @@ import 'Data/Repository/Auth/auth_repository.dart';
 import 'Presentation/Screens/Auth/registering_screen.dart';
 import 'Presentation/Screens/Teacher Screens/create_group.dart';
 import 'Presentation/Screens/Teacher Screens/edit_group_details.dart';
+import 'Presentation/Screens/Teacher Screens/group_details_view.dart';
+import 'Presentation/Screens/Teacher Screens/questions bank/add_questions.dart';
+import 'Presentation/Screens/Teacher Screens/questions bank/create_quiz.dart';
 import 'Presentation/Screens/Teacher Screens/teacher_homepage.dart';
+import 'Presentation/Screens/Teacher Screens/teacher_profile.dart';
 
 class App_Router {
   late final Auth_Cubit authCubit;
@@ -38,6 +42,19 @@ class App_Router {
       case(editGroupDetailsScreen):
         return MaterialPageRoute(builder: (_)=>  const EditGroupDetails());
       case(questionsBankScreen):
+       case (groupDetailsViewScreen):
+        return MaterialPageRoute(builder: (_) => GroupDetailsView());
+    case (addQuestions):
+        return MaterialPageRoute(builder: (_) => Add_Questions());
+
+      case (createQuizScreen):
+        return MaterialPageRoute(builder: (_) => Create_Quiz());
+      // case (groupDetails):
+      //   return MaterialPageRoute(builder: (_) => TeacherGroupDetails());
+        // return MaterialPageRoute(builder: (_) => GroupDetailsView());
+
+      case(teacherProfileScreen):
+        return MaterialPageRoute(builder: (_) => TeacherProfile());
       default:
         return MaterialPageRoute(builder: (_) => const Scaffold(
           backgroundColor: Colors.white,
