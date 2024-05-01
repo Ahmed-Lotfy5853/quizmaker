@@ -1,17 +1,4 @@
-import 'dart:ui';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
@@ -23,9 +10,7 @@ import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/chat/teacher_a
 import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/Profile/teacher_profile.dart';
 import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/teacher_all_requests.dart';
 
-import '../../../../Bussiness Logic/Cubit/Auth/auth_cubit.dart';
 import '../../../../Constants/styles.dart';
-import '../questions bank/create_quiz.dart';
 
 class TeacherNavBar extends StatefulWidget {
   const TeacherNavBar({super.key});
@@ -35,10 +20,6 @@ class TeacherNavBar extends StatefulWidget {
 }
 
 class _TeacherNavBarState extends State<TeacherNavBar> {
-
-
-
-
   bool isSearching = false;
   List<Group> searchedGroups = [];
   TextEditingController nameController = TextEditingController();
@@ -57,89 +38,80 @@ class _TeacherNavBarState extends State<TeacherNavBar> {
   ];
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       body: Container(
-        height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             image: DecorationImage(
                 image: AssetImage(backgroundAsset), fit: BoxFit.cover),
           ),
           child: SafeArea(child: _screens[index])),
-
       bottomNavigationBar: BottomNavigationBar(
         items: [
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.settings,
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.settings,
+            ),
+            label: 'Setting',
+            backgroundColor: Colors.teal,
           ),
-          label: 'Setting',
-          backgroundColor: Colors.teal,
-
-
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.person,
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person,
+            ),
+            label: 'Profile',
+            backgroundColor: Colors.teal,
           ),
-          label: 'Profile',
-          backgroundColor: Colors.teal,
-
-
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.home,
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+            ),
+            label: 'Home',
+            backgroundColor: Colors.teal,
           ),
-          label: 'Home',
-          backgroundColor: Colors.teal,
-
-
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.chat,
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.chat,
+            ),
+            label: 'Chats',
+            backgroundColor: Colors.teal,
           ),
-          label: 'Chats',
-          backgroundColor: Colors.teal,
-
-
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.request_page_outlined,
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.request_page_outlined,
+            ),
+            label: 'Requests',
+            backgroundColor: Colors.teal,
           ),
-          label: 'Requests',
-          backgroundColor: Colors.teal,
-
-
-        ),
-      ],
-      currentIndex: index,
-      onTap: (navIndex) {
-        setState(() {
-          index = navIndex;
-        });
-      },
+        ],
+        currentIndex: index,
+        onTap: (navIndex) {
+          setState(() {
+            index = navIndex;
+          });
+        },
         backgroundColor: Colors.teal,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         selectedItemColor: nextColor,
         unselectedItemColor: Colors.grey,
-
       ),
-      floatingActionButton: index==2?FloatingActionButton.extended(
-        backgroundColor: Colors.teal,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateGroup()),
-          );
-        },
-        icon: Icon(Icons.add,color: Colors.white), label: Text('Create Group',style: TextStyle(color: Colors.white),),
-      ):null,
-
+      floatingActionButton: index == 2
+          ? FloatingActionButton.extended(
+              backgroundColor: Colors.teal,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateGroup()),
+                );
+              },
+              icon: Icon(Icons.add, color: Colors.white),
+              label: Text(
+                'Create Group',
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          : null,
     );
   }
 }
