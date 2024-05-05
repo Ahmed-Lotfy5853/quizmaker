@@ -13,6 +13,7 @@ import '../../../../../Data/Models/user.dart';
 
 class QuizeView extends StatefulWidget {
   const QuizeView({super.key, required this.group});
+
   final Group group;
 
   @override
@@ -21,13 +22,14 @@ class QuizeView extends StatefulWidget {
 
 class _QuizeViewState extends State<QuizeView> {
   TextEditingController messageController = TextEditingController();
+
   Future<UserModel?> getProfile(String uId, BuildContext context) async {
     FirebaseFirestore.instance
         .collection(studentsCollection)
         .doc(uId)
         .get()
         .then(
-          (DocumentSnapshot doc) {
+      (DocumentSnapshot doc) {
         final Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
         if (data != null) {
           print("student");
@@ -47,9 +49,9 @@ class _QuizeViewState extends State<QuizeView> {
               .doc(uId)
               .get()
               .then(
-                (DocumentSnapshot doc) {
+            (DocumentSnapshot doc) {
               final Map<String, dynamic>? data =
-              doc.data() as Map<String, dynamic>?;
+                  doc.data() as Map<String, dynamic>?;
               if (data != null) {
                 print("teacher");
                 log('teacher ${data['email']}');
@@ -141,18 +143,20 @@ class _QuizeViewState extends State<QuizeView> {
                   (users ?? []).add(current_user!);
                   comments.add(CommentModel(
                       comment: messageController.text.trim(),
-                      userId: current_user!.uid!));
+                      userId: current_user!.uid!,
+                      isTeacher: current_user!.isTeacher));
                 });
                 FirebaseFirestore.instance
                     .collection(groupsCollection)
                     .doc(widget.group.id)
                     .collection(postsCollection)
                     .doc(postId)
-                    .collection('comments')
+                    .collection(commentsCollection)
                     .add(CommentModel(
-                    comment: messageController.text.trim(),
-                    userId: current_user!.uid!)
-                    .toMap());
+                            comment: messageController.text.trim(),
+                            userId: current_user!.uid!,
+                            isTeacher: current_user!.isTeacher)
+                        .toMap());
               },
               icon: Container(
                 width: height(context) * 0.07,
@@ -176,15 +180,15 @@ class _QuizeViewState extends State<QuizeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          actions: [
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Start Quize'),
-            ),
-          ],
-        ),
-       /* body: commentTextField(
+      appBar: AppBar(
+        actions: [
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('Start Quize'),
+          ),
+        ],
+      ),
+      /* body: commentTextField(
             context,
             comments!,
             id!)*/

@@ -25,11 +25,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
 
   List<Group> _searchresult = [];
 
-  List<Group > userGroupsList = [];
+  List<Group> userGroupsList = [];
 
   TextEditingController _searchController = TextEditingController();
   bool isSearch = false;
-
 
   final firebaseAuth = FirebaseAuth.instance;
   final firestore = FirebaseFirestore.instance;
@@ -40,7 +39,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
 
   Future<void> createGroup(Group group, File? image) async {
     DocumentReference documentReference =
-    await firestore.collection(teachersCollection).doc(current_user!.uid);
+        await firestore.collection(teachersCollection).doc(current_user.uid);
     DocumentSnapshot documentSnapshot = await documentReference.get();
     List<String> currentArray = List.from(documentSnapshot.get('groups') ?? []);
     await firestore
@@ -48,19 +47,18 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
         .add(group.toMap())
         .then((value) {
       currentArray.add(value.id);
-      value.update({"id" : value.id });
-      documentReference.update({"groups" : currentArray});
+      value.update({"id": value.id});
+      documentReference.update({"groups": currentArray});
     });
   }
 
-  Future<String?> uploadGroupPhoto(
-      File? imageFile,String imageName) async {
+  Future<String?> uploadGroupPhoto(File? imageFile, String imageName) async {
     if (imageFile == null) {
       return null;
     }
     String reference = "groups";
     String? downloadURL =
-    await uploadImageToFirebaseStorage(imageFile, reference, imageName);
+        await uploadImageToFirebaseStorage(imageFile, reference, imageName);
 
     if (downloadURL != null) {
       return downloadURL;
@@ -75,7 +73,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
     try {
       // Create a Firebase Storage reference with the specified path and name
       Reference storageReference =
-      FirebaseStorage.instance.ref().child(reference).child(imageName);
+          FirebaseStorage.instance.ref().child(reference).child(imageName);
 
       // Upload the image file to Firebase Storage
       UploadTask uploadTask = storageReference.putFile(imageFile);
@@ -99,11 +97,12 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
     try {
       await firestore.collection(groupsCollection).get().then((value) {
         value.docs.forEach((element) {
+          print(element["students"]);
           allGroups.add(Group.fromMap(element.data()));
         });
       });
       print("all groups length ${allGroups.length}");
-   /*   allGroups.forEach((element) {
+      /*   allGroups.forEach((element) {
         print(element.id);
       });*/
 
@@ -115,19 +114,18 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
 
   Future<List<Group>> getUserAllGroups() async {
     log("user groups IDs ${current_user!.groups}");
- setState(() {
-   userGroupsList = allGroups.where((element) {
-     log("element ${element.id}");
-     log("is joined ${(current_user!.groups??[]).contains(element.id)}");
-     return (current_user!.groups??[]).contains(element.id);
-   }).toList();
- });
+    setState(() {
+      userGroupsList = allGroups.where((element) {
+        log("element ${element.id}");
+        log("is joined ${(current_user!.groups ?? []).contains(element.id)}");
+        return (current_user!.groups ?? []).contains(element.id);
+      }).toList();
+    });
     return userGroupsList;
   }
 
-
   @override
-  void initState()  {
+  void initState() {
     super.initState();
     fetchAllGroups();
   }
@@ -144,69 +142,59 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
     var width = MediaQuery.of(context).size.width;
     var smallFontsize = MediaQuery.textScalerOf(context).scale(15);
 
+    return Padding(
+      padding: const EdgeInsets.all(2),
+      child: Column(
+        children: [
+          TextFormField(
+            style: TextStyle(color: nextColor),
+            controller: _searchController,
+            onChanged: (value) {
+              print(value);
+              setState(() {
+                isSearch = value.isNotEmpty;
 
-    return
-
-
-
-     Padding(
-       padding: const EdgeInsets.all(2),
-       child: Column(
-         children: [
-           TextFormField(
-             style: TextStyle(color: nextColor),
-
-             controller: _searchController,
-             onChanged: (value) {
-               print(value);
-               setState(() {
-                 isSearch = value.isNotEmpty ;
-
-                 _searchresult = _searchMethed(value.toLowerCase());
-                 //check user is searching or no
-                 print("isSearching: $isSearch");
-               });
-             },
-             decoration: InputDecoration(
-               filled: true,
-               fillColor: firstColor,
-               prefixIcon: Icon(
-                 Icons.search,
-                 color: nextColor,
-               ),
-               labelStyle: TextStyle(color: nextColor),
-               hintText: 'Search About Groups ...',
-               hintStyle: TextStyle(color: nextColor),
-               focusedBorder: OutlineInputBorder(
-                   borderRadius: BorderRadius.circular(10),
-                   borderSide:
-                       BorderSide(color: Colors.transparent, width: 0.0)),
-               border: OutlineInputBorder(
-                 borderSide:
-                     BorderSide(color: Colors.transparent, width: 0.0),
-                 borderRadius: BorderRadius.circular(10),
-               ),
-             ),
-           ),
-           Expanded(
-             child:_searchController.text.isEmpty
-                 ? userGroupsList.isEmpty
-                 ? _noData('There are no Groups', smallFontsize )
-                 : _buildGroup(userGroupsList, width)
-                 : _searchresult.isNotEmpty
-                 ? _buildSearchResults(_searchresult, width)
-                 : _noData('There are no Results', smallFontsize),
-
-           ),
-
-         ],
-       ),
-     );
-
+                _searchresult = _searchMethed(value.toLowerCase());
+                //check user is searching or no
+                print("isSearching: $isSearch");
+              });
+            },
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: firstColor,
+              prefixIcon: Icon(
+                Icons.search,
+                color: nextColor,
+              ),
+              labelStyle: TextStyle(color: nextColor),
+              hintText: 'Search About Groups ...',
+              hintStyle: TextStyle(color: nextColor),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide:
+                      BorderSide(color: Colors.transparent, width: 0.0)),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.transparent, width: 0.0),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          Expanded(
+            child: _searchController.text.isEmpty
+                ? userGroupsList.isEmpty
+                    ? _noData('There are no Groups', smallFontsize)
+                    : _buildGroup(userGroupsList, width)
+                : _searchresult.isNotEmpty
+                    ? _buildSearchResults(_searchresult, width)
+                    : _noData('There are no Results', smallFontsize),
+          ),
+        ],
+      ),
+    );
   }
 
   // if there no Groups
-  Widget _noData(String message , double? fsize) {
+  Widget _noData(String message, double? fsize) {
     return Center(
       child: Text(
         message,
@@ -230,41 +218,40 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
   }
 
   // build groups is joined
-  Widget _buildGroup(List<Group> dataGroup , double width) {
-
+  Widget _buildGroup(List<Group> dataGroup, double width) {
     return ListView.builder(
       itemBuilder: (_, int index) {
         print(dataGroup.length);
         return InkWell(
-
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => TeacherGroupDetails(group: dataGroup[index],)),
-          );
-        },
-        child: Card(
-          child: ListTile(
-            leading: CircleAvatar(
-              radius: width *0.07,
-              backgroundImage: dataGroup[index].image != '' ? NetworkImage(dataGroup[index].image!) : null,
-              child: dataGroup[index].image == ''
-                  ? Icon(Icons.groups, size: width / 7.5, color: Colors.white)
-                  : null,
-            ),
-            title: Text(
-              dataGroup[index].name,
-              style: GroupOrNameTextStyle(context),
-            ),
-            subtitle: Text(
-              dataGroup[index].description,
-              maxLines: 1,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => TeacherGroupDetails(
+                        group: dataGroup[index],
+                      )),
+            );
+          },
+          child: Card(
+            child: ListTile(
+              leading: CircleAvatar(
+                radius: width * 0.07,
+                child: dataGroup[index].image == null
+                    ? Icon(Icons.groups, size: width / 10, color: Colors.white)
+                    : null,
+              ),
+              title: Text(
+                dataGroup[index].name,
+                style: GroupOrNameTextStyle(context),
+              ),
+              subtitle: Text(
+                dataGroup[index].description,
+                maxLines: 1,
+              ),
             ),
           ),
-        ),
-      );
-      }
-      ,
+        );
+      },
       itemCount: userGroupsList.length,
     );
   }
@@ -282,9 +269,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
         ],
       ),
       childrenDelegate: SliverChildBuilderDelegate(
-            (context, index) {
+        (context, index) {
           final Group group = dataGroup[index];
-          final bool isInGroup =  userGroupsList.contains(dataGroup[index]);
+          final bool isInGroup = userGroupsList.contains(dataGroup[index]);
 
           return InkWell(
             onTap: () {},
@@ -296,9 +283,11 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
                   children: [
                     CircleAvatar(
                       radius: width / 12,
-                      backgroundImage: group.image != '' ? NetworkImage(group.image! ) : null,
+                      backgroundImage:
+                          group.image != '' ? NetworkImage(group.image!) : null,
                       child: group.image == ''
-                          ? Icon(Icons.groups, size: width / 7.5, color: Colors.white)
+                          ? Icon(Icons.groups,
+                              size: width / 7.5, color: Colors.white)
                           : null,
                     ),
                     Text(
@@ -347,39 +336,30 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
     );
   }
 
-
   Future<void> fetchAllGroups() async {
     List<Group> h = await getAllGroups();
 
-
-     await getUserAllGroups();
+    await getUserAllGroups();
     // userGroupsList = g;
     log("user groups ${userGroupsList.length}");
     allGroupsList = h;
 
-
     // print("ggg" + g.toString());
   }
 
-  getUserGroups() async{
+  getUserGroups() async {
     log('user groups ${groups_ids.length}');
-   setState(() {
-     for(var groupId in groups_ids){
-        firestore
-           .collection(groupsCollection)
-           .doc(groupId)
-           .get()
-           .then((value) {
-             log("user group  ${value.data()}");
-         if (value.data() != null) {
-           userGroups.add(Group.fromMap(value.data()!)); ;
-         }
-       });
-     }
-   });
-   log("user groups ${userGroups.length}");
-
+    setState(() {
+      for (var groupId in groups_ids) {
+        firestore.collection(groupsCollection).doc(groupId).get().then((value) {
+          log("user group  ${value.data()}");
+          if (value.data() != null) {
+            userGroups.add(Group.fromMap(value.data()!));
+            ;
+          }
+        });
+      }
+    });
+    log("user groups ${userGroups.length}");
   }
 }
-
-

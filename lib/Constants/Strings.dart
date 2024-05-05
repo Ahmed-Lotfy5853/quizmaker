@@ -23,15 +23,12 @@ const String teacherProfileScreen = "/teacherProfileScreen";
 const String teachersCollection = "Teachers";
 const String studentsCollection = "Students";
 const String groupsCollection = "Groups";
-
 const String studentRequestsCollection = "Requests";
 const String teacherRequestsCollection = "TeacherRequests";
 const String questionsCollection = "Questions";
 const String examsCollection = "Exams";
-
 const String postsCollection = "Posts";
 const String quizCollection = "Quiz";
-
 const String commentsCollection = "Comments";
 
 const String onboardAsset = "assets/images/onboard.png";
@@ -39,7 +36,7 @@ const String backgroundAsset = "assets/images/background.jpg";
 const String profileAsset = 'assets/images/profile_place_holder.png';
 const String groupAsset = 'assets/images/group2.png';
 
-UserModel? current_user =
+UserModel current_user =
     UserModel(uid: '', name: '', email: '', isTeacher: false, photoUrl: '');
 
 class MyAssets {

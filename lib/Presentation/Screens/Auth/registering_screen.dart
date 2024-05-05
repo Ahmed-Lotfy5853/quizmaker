@@ -9,9 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quiz_maker/Bussiness%20Logic/Cubit/Auth/auth_cubit.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/inside_bottom_bar/Home/home.dart';
 import '../../../Data/Models/user.dart';
-import '../Student Screens/bottom_navigatoion_bar.dart';
+import '../Student Screens/Home/student_nav_bar.dart';
 import '../Teacher Screens/Home/teacher_home.dart';
 import '../Teacher Screens/Home/teacher_nav_bar.dart';
 
@@ -25,9 +24,9 @@ class Register_Screen extends StatefulWidget {
 class _Register_ScreenState extends State<Register_Screen> {
   final login_form_key = GlobalKey<FormState>();
   final register_form_key = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'teacher@user.com');
+  final _emailController = TextEditingController(text: 's@gmail.com');
   final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController(text: 'Teacher@1234');
+  final _passwordController = TextEditingController(text: 'M12345678');
   bool showPassword = true;
   bool isLogin = true;
   bool isTeacher = false;
@@ -592,10 +591,7 @@ class _Register_ScreenState extends State<Register_Screen> {
   void submitRegister() {
     if (register_form_key.currentState!.validate()) {
       signUp(_emailController.text, _passwordController.text, isTeacher,
-              _imageFile, _usernameController.text.trim())
-          .then((value) {
-        return;
-      });
+          _imageFile, _usernameController.text.trim());
     }
   }
 
@@ -612,7 +608,7 @@ class _Register_ScreenState extends State<Register_Screen> {
     } else if (state == 'AuthSuccess') {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         Navigator.pushNamed(context,
-            current_user!.isTeacher ? bottomNavStudentScreen : teacherNavBar);
+            current_user.isTeacher ? bottomNavStudentScreen : teacherNavBar);
       });
       return Container();
     } else {
@@ -639,18 +635,19 @@ class _Register_ScreenState extends State<Register_Screen> {
       FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
-        var img =
+        String? img =
             await uploadProfileImage(imageFile, isTeacher, value.user!.uid);
         setFirestoreAccountInfo(isTeacher, img, name, email);
 
-        current_user?.copyWith(
+        current_user.copyWith(
           uid: FirebaseAuth.instance.currentUser!.uid,
           email: email,
           name: name,
-          photoUrl: img,
+          photoUrl: imageFile != null ? img : null,
           isTeacher: isTeacher,
           groups: [],
         );
+        getProfile(FirebaseAuth.instance.currentUser!.uid, context);
         return value;
       });
     } catch (e) {
@@ -681,20 +678,24 @@ class _Register_ScreenState extends State<Register_Screen> {
             .collection(teachersCollection)
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .set({
+          "uid": FirebaseAuth.instance.currentUser!.uid,
           "name": name,
           "email": email,
           "cover": image,
           "isTeacher": isTeacher,
+          "groups": [],
         });
       } else {
         FirebaseFirestore.instance
             .collection(studentsCollection)
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .set({
+          "uid": FirebaseAuth.instance.currentUser!.uid,
           "name": name,
           "email": email,
           "cover": image,
           "isTeacher": isTeacher,
+          "groups": [],
         });
       }
     } catch (e) {

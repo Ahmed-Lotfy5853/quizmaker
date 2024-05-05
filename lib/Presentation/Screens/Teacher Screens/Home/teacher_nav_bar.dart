@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -38,6 +40,7 @@ class _TeacherNavBarState extends State<TeacherNavBar> {
   ];
   @override
   Widget build(BuildContext context) {
+    log("current user" + current_user.uid.toString());
     return Scaffold(
       body: Container(
           height: MediaQuery.of(context).size.height,

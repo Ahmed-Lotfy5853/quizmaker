@@ -65,7 +65,7 @@ class _Add_QuestionsState extends State<Add_Questions> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 40 , vertical: 50),
+          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 50),
           decoration: BoxDecoration(
             color: Color.fromRGBO(244, 243, 243, 1),
           ),
@@ -372,7 +372,7 @@ class _Add_QuestionsState extends State<Add_Questions> {
                     items: ["True", "False"]
                         .map(
                           (type) => DropdownMenuItem(
-                            value: type=="True"?0:1,
+                            value: type == "True" ? 0 : 1,
                             child: Text(
                               type,
                               style: TextStyle(color: Colors.black),
@@ -401,7 +401,7 @@ class _Add_QuestionsState extends State<Add_Questions> {
                       ),
                     ),
                     validator: (value) {
-                      if (correctAnswer == null || correctAnswer== null) {
+                      if (correctAnswer == null) {
                         return 'Enter a valid option';
                       }
                     },
@@ -425,15 +425,25 @@ class _Add_QuestionsState extends State<Add_Questions> {
       print(option3.text);
       print(option4.text);
       print(correctAnswer);
-Navigator.pop(context,{
-  'difficulty': difficulty,
-  'question': question.text,
-  'option1': option1.text,
-  'option2': option2.text,
-  'option3': option3.text,
-  'option4': option4.text,
-  'correctAnswer': correctAnswer
-});
+      if (isMcq) {
+        Navigator.pop(context, {
+          'difficulty': difficulty,
+          'question': question.text,
+          'option1': option1.text,
+          'option2': option2.text,
+          'option3': option3.text,
+          'option4': option4.text,
+          'correctAnswer': correctAnswer,
+        });
+      } else {
+        Navigator.pop(context, {
+          'difficulty': difficulty,
+          'question': question.text,
+          'option1': option1.text,
+          'option2': option2.text,
+          'correctAnswer': correctAnswer,
+        });
+      }
     }
   }
 }

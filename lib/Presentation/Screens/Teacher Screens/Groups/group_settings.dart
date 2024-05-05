@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
+import 'package:quiz_maker/Constants/styles.dart';
 
 import '../../../../Data/Models/group.dart';
 import '../edit_group_details.dart';
 
 class GroupSettings extends StatefulWidget {
   GroupSettings({super.key, required this.group});
-final Group group;
+  final Group group;
   @override
   State<GroupSettings> createState() => _GroupSettingsState();
 }
 
 class _GroupSettingsState extends State<GroupSettings> {
-
-
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -30,7 +29,7 @@ class _GroupSettingsState extends State<GroupSettings> {
             fontSize: 25,
           ),
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: firstColor,
         centerTitle: true,
         elevation: 1,
         iconTheme: IconThemeData(color: Colors.white, size: 30),
@@ -51,7 +50,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                 ),
                 child: Center(
                   child: Text(
-                    widget.group.description!,
+                    widget.group.description,
                     style: TextStyle(fontSize: 20),
                     textAlign: TextAlign.center,
                   ),
@@ -65,18 +64,20 @@ class _GroupSettingsState extends State<GroupSettings> {
                 ),
                 buildButton("Questions Bank", Icons.account_balance_sharp,
                     height, width, smallerTextFontsize, () {
-                  Navigator.pushNamed(context, questionsBankScreen,arguments: widget.group.id);
+                  Navigator.pushNamed(context, questionsBankScreen,
+                      arguments: widget.group.id);
                 }),
                 SizedBox(
                   height: 40,
                 ),
-
                 buildButton("Edit Group", Icons.edit, height, width,
                     smallerTextFontsize, () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => EditGroupDetails(groupId: widget.group.id!,)));
+                          builder: (context) => EditGroupDetails(
+                                groupId: widget.group.id!,
+                              )));
                 }),
               ],
             ),
@@ -97,7 +98,7 @@ class _GroupSettingsState extends State<GroupSettings> {
           height: height / 12,
           width: width / 1.5,
           decoration: BoxDecoration(
-            color: Colors.green[400],
+            color: firstColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(

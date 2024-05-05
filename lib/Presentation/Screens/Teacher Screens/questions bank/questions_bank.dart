@@ -10,7 +10,9 @@ import 'package:quiz_maker/Data/Models/question.dart';
 
 class Questions_Bank extends StatefulWidget {
   const Questions_Bank({super.key, required this.groupId});
-final String groupId;
+
+  final String groupId;
+
   @override
   State<Questions_Bank> createState() => _Questions_BankState();
 }
@@ -29,7 +31,7 @@ class _Questions_BankState extends State<Questions_Bank> {
       controller: searchTextController,
       cursorColor: Colors.black,
       decoration: const InputDecoration(
-        hintText: "Find a character...",
+        hintText: "Find a question...",
         border: InputBorder.none,
         hintStyle: TextStyle(color: Colors.white, fontSize: 20),
       ),
@@ -104,15 +106,10 @@ class _Questions_BankState extends State<Questions_Bank> {
 
   @override
   void initState() {
-    FirebaseFirestore.instance.collection(groupsCollection).doc(widget.groupId).collection(questionsCollection).get().then((value) {
-  setState(() {
-    for(int i=0;i<value.docs.length;i++){
-      questions.add(Question(id:value.docs[i].id,question: value.docs[i].data()['question'], answers: value.docs[i].data()['answers'], correctAnswer: value.docs[i].data()['correctAnswer'], level: value.docs[i].data()['level']));
-    }
-  });
-    });
+    getQuestions();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
@@ -125,7 +122,6 @@ class _Questions_BankState extends State<Questions_Bank> {
         image: DecorationImage(
             image: AssetImage(backgroundAsset), fit: BoxFit.cover),
       ),
-
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -139,31 +135,31 @@ class _Questions_BankState extends State<Questions_Bank> {
           children: [
             GestureDetector(
               onTap: () {
-             Map<String,dynamic>? q;
-             Navigator.pushNamed(context, addQuestions).then((value) {
-              setState(() {
-                q = value as Map<String,dynamic>?;
-                if(q!=null){
-                  List<String> answers =[
-                    if(q!['option1']!=null)
-                      q!['option1'] as String,
-                    if(q!['option2']!=null)
-                      q!['option2']as String,
-                    if(q!['option3']!=null)
-                      q!['option3']as String,
-                    if(q!['option4']!=null)
-                      q!['option4']as String,
-                  ];
+                Map<String, dynamic>? q;
+                Navigator.pushNamed(context, addQuestions).then((value) {
+                  setState(() {
+                    q = value as Map<String, dynamic>?;
+                    if (q != null) {
+                      List<String> answers = [
+                        if (q!['option1'] != null) q!['option1'] as String,
+                        if (q!['option2'] != null) q!['option2'] as String,
+                        if (q!['option3'] != null) q!['option3'] as String,
+                        if (q!['option4'] != null) q!['option4'] as String,
+                      ];
 
-                  questions.add(Question(question: q!['question']!, answers: answers, correctAnswer: q!['correctAnswer']??0, level: q!['difficulty']!));
-
-                }
-              });
-              FirebaseFirestore.instance.collection(groupsCollection).doc(widget.groupId).collection(questionsCollection).add(
-                  questions.last.toMap()
-              );
-             });
-
+                      questions.add(Question(
+                          question: q!['question']!,
+                          answers: answers,
+                          correctAnswer: q!['correctAnswer'] - 1 ?? 0,
+                          level: q!['difficulty']!));
+                    }
+                  });
+                  FirebaseFirestore.instance
+                      .collection(groupsCollection)
+                      .doc(widget.groupId)
+                      .collection(questionsCollection)
+                      .add(questions.last.toMap());
+                });
               },
               child: Container(
                 height: 80,
@@ -219,15 +215,16 @@ class _Questions_BankState extends State<Questions_Bank> {
                         padding: EdgeInsets.only(bottom: 10),
                         child: ListView.separated(
                             shrinkWrap: true,
-                            itemCount:
-                                isSearch ? searchedQuestions.length : questions.length,
+                            itemCount: isSearch
+                                ? searchedQuestions.length
+                                : questions.length,
                             itemBuilder: (context, index) {
                               return isSearch
                                   ? ListTile(
-                        
                                       title: Text(
                                         searchedQuestions[index].question,
-                                        style: TextStyle(fontSize: bigTextFontsize),
+                                        style: TextStyle(
+                                            fontSize: bigTextFontsize),
                                       ),
                                       subtitle: Container(
                                         width: w,
@@ -235,20 +232,31 @@ class _Questions_BankState extends State<Questions_Bank> {
                                         child: ListView.builder(
                                           shrinkWrap: true,
                                           scrollDirection: Axis.horizontal,
-                                          itemCount:
-                                              searchedQuestions[index].answers.length,
-                                          itemBuilder: (BuildContext context, int idx) {
+                                          itemCount: searchedQuestions[index]
+                                              .answers
+                                              .length,
+                                          itemBuilder:
+                                              (BuildContext context, int idx) {
+                                            print("correct " +
+                                                searchedQuestions[index]
+                                                    .correctAnswer
+                                                    .toString());
                                             var chars = ["a", "b", "c", "d"];
                                             return Padding(
-                                              padding: const EdgeInsets.only(right: 15),
+                                              padding: const EdgeInsets.only(
+                                                  right: 15),
                                               child: Text(
                                                 chars[idx] +
                                                     ". " +
                                                     searchedQuestions[index]
                                                         .answers[idx],
                                                 style: TextStyle(
-                                                    fontSize: smallerTextFontsize,
-                                                    color: index == searchedQuestions[index].correctAnswer
+                                                    fontSize:
+                                                        smallerTextFontsize,
+                                                    color: idx ==
+                                                            searchedQuestions[
+                                                                    index]
+                                                                .correctAnswer
                                                         ? Colors.green
                                                         : Colors.red),
                                               ),
@@ -258,56 +266,13 @@ class _Questions_BankState extends State<Questions_Bank> {
                                       ),
                                       trailing: IconButton(
                                         onPressed: () {
-                                          setState(() {
-                                            searchedQuestions.removeAt(index);
-                                          });
-                                        },
-                                        icon: Icon(
-                                          Icons.delete_forever_outlined,
-                                          size: 40,
-                                        ),
-                                      ),
-                                      leading: Text(
-                                        (index + 1).toString() + ")",
-                                        style: TextStyle(fontSize: bigTextFontsize),
-                                      ),
-                                    )
-                                  : ListTile(
-                                      title: Text(
-                                        questions[index].question,
-                                        style: TextStyle(fontSize: bigTextFontsize),
-                                      ),
-                                      subtitle: Container(
-                                        width: w,
-                                        height: 20,
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: questions[index].answers.length,
-                                          itemBuilder: (BuildContext context, int idx) {
-                                            var chars = ["a", "b", "c", "d"];
-                                            return Padding(
-                                              padding: const EdgeInsets.only(right: 15),
-                                              child: Text(
-                                                chars[idx] +
-                                                    ". " +
-                                                    questions[index].answers[idx]
-                                                ,
-                                                style: TextStyle(
-                                                    fontSize: smallerTextFontsize,
-                                                    color: index == questions[index].correctAnswer
-                        
-                                                        ? Colors.green
-                                                        : Colors.red),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      trailing: IconButton(
-                                        onPressed: () {
-
-                                          FirebaseFirestore.instance.collection(groupsCollection).doc(widget.groupId).collection(questionsCollection).doc(questions[index].id).delete().then((value) {
+                                          FirebaseFirestore.instance
+                                              .collection(groupsCollection)
+                                              .doc(widget.groupId)
+                                              .collection(questionsCollection)
+                                              .doc(questions[index].id)
+                                              .delete()
+                                              .then((value) {
                                             setState(() {
                                               questions.removeAt(index);
                                             });
@@ -320,7 +285,75 @@ class _Questions_BankState extends State<Questions_Bank> {
                                       ),
                                       leading: Text(
                                         (index + 1).toString() + ")",
-                                        style: TextStyle(fontSize: bigTextFontsize),
+                                        style: TextStyle(
+                                            fontSize: bigTextFontsize),
+                                      ),
+                                    )
+                                  : ListTile(
+                                      title: Text(
+                                        questions[index].question,
+                                        style: TextStyle(
+                                            fontSize: bigTextFontsize),
+                                      ),
+                                      subtitle: Container(
+                                        width: w,
+                                        height: 20,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              questions[index].answers.length,
+                                          itemBuilder:
+                                              (BuildContext context, int idx) {
+                                            print("correct " +
+                                                questions[index]
+                                                    .correctAnswer
+                                                    .toString());
+                                            var chars = ["a", "b", "c", "d"];
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 15),
+                                              child: Text(
+                                                chars[idx] +
+                                                    ". " +
+                                                    questions[index]
+                                                        .answers[idx],
+                                                style: TextStyle(
+                                                    fontSize:
+                                                        smallerTextFontsize,
+                                                    color: idx ==
+                                                            questions[index]
+                                                                .correctAnswer
+                                                        ? Colors.green
+                                                        : Colors.red),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      trailing: IconButton(
+                                        onPressed: () {
+                                          FirebaseFirestore.instance
+                                              .collection(groupsCollection)
+                                              .doc(widget.groupId)
+                                              .collection(questionsCollection)
+                                              .doc(questions[index].id)
+                                              .delete()
+                                              .then((value) {
+                                            setState(() {
+                                              questions.removeAt(index);
+                                            });
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.delete_forever_outlined,
+                                          size: 40,
+                                        ),
+                                      ),
+                                      leading: Text(
+                                        (index + 1).toString() + ")",
+                                        style: TextStyle(
+                                            fontSize: bigTextFontsize),
                                       ),
                                     );
                             },
@@ -343,5 +376,25 @@ class _Questions_BankState extends State<Questions_Bank> {
         ),
       ),
     );
+  }
+
+  void getQuestions() async {
+    await FirebaseFirestore.instance
+        .collection(groupsCollection)
+        .doc(widget.groupId)
+        .collection(questionsCollection)
+        .get()
+        .then((value) {
+      setState(() {
+        for (int i = 0; i < value.docs.length; i++) {
+          questions.add(Question(
+              id: value.docs[i].id,
+              question: value.docs[i].data()['question'],
+              answers: value.docs[i].data()['answers'],
+              correctAnswer: value.docs[i].data()['correctAnswer'],
+              level: value.docs[i].data()['level']));
+        }
+      });
+    });
   }
 }

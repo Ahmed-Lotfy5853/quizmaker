@@ -45,12 +45,12 @@ class ExamModel {
       id: map['id'] as String,
       name: map['quizName'] as String,
       createdAt: map['createdAt'] as String,
-      easyQuestions: map['easyQuestions'] as int,
-      mediumQuestions: map['mediumQuestions'] as int,
-      hardQuestions: map['hardQuestions'] as int,
+      easyQuestions: int.parse(map['easyQuestions']),
+      mediumQuestions: int.parse(map['mediumQuestions']),
+      hardQuestions: int.parse(map['hardQuestions']),
       results: map['students'] as List<dynamic>?,
       startAt: map['startDate'] as String,
-      timer: map['timer'] as int,
+      timer: int.parse(map['timer']),
       endAt: map['endDate'] as String,
     );
   }

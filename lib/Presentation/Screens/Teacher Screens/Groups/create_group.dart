@@ -76,10 +76,11 @@ class _CreateGroupState extends State<CreateGroup> {
                 CircleAvatar(
                   radius: width / 6.5,
                   backgroundImage: _image != null ? FileImage(_image!) : null,
-                  backgroundColor: _image == null
-                      ?Colors.teal:Colors.transparent,
+                  backgroundColor:
+                      _image == null ? Colors.teal : Colors.transparent,
                   child: _image == null
-                      ? Icon(Icons.groups, size: width / 7.5, color: Colors.white)
+                      ? Icon(Icons.groups,
+                          size: width / 7.5, color: Colors.white)
                       : null,
                 ),
                 SizedBox(
@@ -127,7 +128,7 @@ class _CreateGroupState extends State<CreateGroup> {
                   height: height * 0.04,
                 ),
                 TextFormField(
-                  controller: descriptionController,
+                  controller: groupNameController,
                   decoration: const InputDecoration(
                     hintText: 'Group Name',
                     hintStyle: TextStyle(
@@ -166,7 +167,7 @@ class _CreateGroupState extends State<CreateGroup> {
                   height: height * 0.04,
                 ),
                 TextFormField(
-                  controller: groupNameController,
+                  controller: descriptionController,
                   keyboardType: TextInputType.multiline,
                   decoration: const InputDecoration(
                     hintText: 'Description',
@@ -235,37 +236,67 @@ class _CreateGroupState extends State<CreateGroup> {
     );
   }
 
-  void createGroup() async{
+  void createGroup() async {
     if (formKey.currentState!.validate()) {
-      Group group = Group(
-        name: groupNameController.text,
-        image: "",
-        description: descriptionController.text,
-        createdBy: current_user!.name,
-        createdAt: DateTime.now().toString(),
-      );
-
-
-      await  FirebaseStorage.instance.ref().child('groups').child(groupNameController.text).child(DateTime.now().toString()).putFile(_image!).then((p0) {
-        p0.ref.getDownloadURL().then((value) {
-          FirebaseFirestore.instance.collection(groupsCollection).add(Group(
-            name: descriptionController.text,
-            image: value,
-            description: groupNameController.text,
-            createdBy: current_user!.name,
-            createdAt: DateTime.now().toString(),
-            teachers: [current_user!.uid!],
-          ).toMap()).then((value) {
-            current_user?.groups?.add(value.id);
-            log("groups ${current_user?.groups}");
-            FirebaseFirestore.instance.collection(teachersCollection).doc(current_user!.uid).update({"groups" : current_user?.groups });
-            FirebaseFirestore.instance.collection(groupsCollection).doc(value.id).update({"id" : value.id });
-            Navigator.pop(context);
-          });
-
+      if (_image == null) {
+        FirebaseFirestore.instance
+            .collection(groupsCollection)
+            .add(Group(
+              name: groupNameController.text,
+              image:
+                  null, // Assuming you handle null images appropriately in your Group model
+              description: descriptionController.text,
+              createdBy: current_user.name,
+              createdAt: DateTime.now().toString(),
+              teachers: [current_user.uid!],
+              students: [],
+            ).toMap())
+            .then((value) {
+          current_user.groups!.add(value.id);
+          FirebaseFirestore.instance
+              .collection(teachersCollection)
+              .doc(current_user.uid)
+              .update({"groups": current_user.groups});
+          FirebaseFirestore.instance
+              .collection(groupsCollection)
+              .doc(value.id)
+              .update({"id": value.id});
+          Navigator.pop(context);
         });
-      });
-
+      } else {
+        await FirebaseStorage.instance
+            .ref()
+            .child('groups')
+            .child(groupNameController.text)
+            .child(DateTime.now().toString())
+            .putFile(_image!)
+            .then((p0) {
+          p0.ref.getDownloadURL().then((value) {
+            FirebaseFirestore.instance
+                .collection(groupsCollection)
+                .add(Group(
+                  name: groupNameController.text,
+                  image: value,
+                  description: descriptionController.text,
+                  createdBy: current_user!.name,
+                  createdAt: DateTime.now().toString(),
+                  teachers: [current_user!.uid!],
+                ).toMap())
+                .then((value) {
+              current_user.groups!.add(value.id);
+              FirebaseFirestore.instance
+                  .collection(teachersCollection)
+                  .doc(current_user!.uid)
+                  .update({"groups": current_user?.groups});
+              FirebaseFirestore.instance
+                  .collection(groupsCollection)
+                  .doc(value.id)
+                  .update({"id": value.id});
+              Navigator.pop(context);
+            });
+          });
+        });
+      }
     }
   }
 }

@@ -20,7 +20,7 @@ class UserModel {
       'name': this.name,
       'email': this.email,
       'uid': this.uid,
-      'photoUrl': this.photoUrl,
+      'cover': this.photoUrl,
       'isTeacher': this.isTeacher,
       'groups': this.groups,
     };
@@ -31,9 +31,10 @@ class UserModel {
       name: map['name'] as String,
       email: map['email'] as String,
       uid: map['uid'] as String,
-      photoUrl: map['photoUrl'] as String?,
+      photoUrl: map['cover'] as String?,
       isTeacher: map['isTeacher'] as bool,
-      groups: (map['groups'] as List<dynamic>).map((e) => e.toString()).toList(),
+      groups:
+          (map['groups'] as List<dynamic>).map((e) => e.toString()).toList(),
     );
   }
 
