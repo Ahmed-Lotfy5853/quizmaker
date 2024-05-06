@@ -158,7 +158,10 @@ class _Questions_BankState extends State<Questions_Bank> {
                       .collection(groupsCollection)
                       .doc(widget.groupId)
                       .collection(questionsCollection)
-                      .add(questions.last.toMap());
+                      .add(questions.last.toMap())
+                      .then((value) {
+                    value.update({'id': value.id});
+                  });
                 });
               },
               child: Container(

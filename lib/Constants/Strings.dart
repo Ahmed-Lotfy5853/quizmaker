@@ -11,6 +11,8 @@ const String addTeachertoGroup = "/addTeachertoGroup";
 const String questionsBankScreen = "/questionsBankScreen";
 const String createQuizScreen = "/createQuizScreen";
 const String teacherViewQuizScreen = '/teacherQuizScreen';
+const String studentViewQuizScreen = '/studentViewQuizScreen';
+const String startQuizScreen = '/startQuizScreen';
 const String addQuestions = "/add_question";
 
 const String teacherHome = "/teacherHome";

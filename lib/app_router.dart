@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Data/Models/group.dart';
+import 'package:quiz_maker/Presentation/Screens/Student%20Screens/GroupDetails/student_view_quiz.dart';
 import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/Groups/view_quiz.dart';
 import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/Home/new_navBar.dart';
 import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/Home/teacher_nav_bar.dart';
@@ -12,6 +13,7 @@ import 'Data/Models/exam_model.dart';
 import 'Data/Models/user.dart';
 import 'Data/Repository/Auth/auth_repository.dart';
 import 'Presentation/Screens/Auth/registering_screen.dart';
+import 'Presentation/Screens/Student Screens/GroupDetails/Quize/start_quiz.dart';
 import 'Presentation/Screens/Student Screens/GroupDetails/student_group_details.dart';
 import 'Presentation/Screens/Teacher Screens/Groups/create_group.dart';
 import 'Presentation/Screens/Teacher Screens/Groups/teacher_group_details.dart';
@@ -57,6 +59,26 @@ class App_Router {
                   currentUser: args['currentUser'] as UserModel,
                   teachers: args['teachers'] as List<UserModel>,
                   students: args['students'] as List<UserModel>,
+                ));
+      case (studentViewQuizScreen):
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+            builder: (_) => StudentViewQuiz(
+                  exam: args['exam'] as ExamModel,
+                  group: args['group'] as Group,
+                  currentUser: args['currentUser'] as UserModel,
+                  teachers: args['teachers'] as List<UserModel>,
+                  students: args['students'] as List<UserModel>,
+                ));
+
+      case (startQuizScreen):
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+            builder: (_) => StartQuiz(
+                  exam: args['exam'] as ExamModel,
+                  group: args['group'] as Group,
                 ));
     }
   }

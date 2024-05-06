@@ -165,7 +165,7 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
                     log(exams[index].name);
                     log((exams[index].results?.length ?? 0).toString());
                     Navigator.of(context).pushNamed(
-                      teacherViewQuizScreen,
+                      studentViewQuizScreen,
                       arguments: {
                         'exam': exams[index],
                         'group': widget.group,

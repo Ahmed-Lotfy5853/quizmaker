@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:quiz_maker/Data/Models/comment_model.dart';
 
 class ExamModel {
@@ -41,6 +43,7 @@ class ExamModel {
   }
 
   factory ExamModel.fromMap(Map<String, dynamic> map) {
+    log("map   " + map["results"].toString());
     return ExamModel(
       id: map['id'] as String,
       name: map['quizName'] as String,
@@ -48,7 +51,7 @@ class ExamModel {
       easyQuestions: int.parse(map['easyQuestions']),
       mediumQuestions: int.parse(map['mediumQuestions']),
       hardQuestions: int.parse(map['hardQuestions']),
-      results: map['students'] as List<dynamic>?,
+      results: map['results'] != null ? map['results'] as List<dynamic> : [],
       startAt: map['startDate'] as String,
       timer: int.parse(map['timer']),
       endAt: map['endDate'] as String,
