@@ -12,6 +12,7 @@ import 'package:quiz_maker/Presentation/Screens/Student%20Screens/GroupDetails/s
 
 import '../../../../../Constants/responsive.dart';
 import '../../../../../Data/Models/group.dart';
+import '../../../../Data/Models/requests.dart';
 import '../../Teacher Screens/Groups/teacher_group_details.dart';
 
 class StudentHomeScreen extends StatefulWidget {
@@ -285,12 +286,9 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   children: [
                     CircleAvatar(
                       radius: width / 12,
-                      backgroundImage:
-                          group.image != '' ? NetworkImage(group.image!) : null,
-                      child: group.image == ''
-                          ? Icon(Icons.groups,
-                              size: width / 7.5, color: Colors.white)
-                          : null,
+                      backgroundImage: group.image != null
+                          ? NetworkImage(group.image!)
+                          : AssetImage(profileAsset) as ImageProvider,
                     ),
                     Text(
                       group.name,
@@ -305,22 +303,32 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                       ),
                     ),
                     if (!isInGroup) // Add the tile conditionally based on isInGroup
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Text(
-                                'Join',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                      InkWell(
+                        onTap: () {
+                          putRequestToGroup(dataGroup[index]);
+
+                          setState(() {
+                            _searchController.clear();
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 5),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Text(
+                                  'Join',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -363,5 +371,43 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       }
     });
     log("user groups ${userGroups.length}");
+  }
+
+  void putRequestToGroup(Group dataGroup) async {
+    await FirebaseFirestore.instance
+        .collection(teachersCollection)
+        .doc(dataGroup.teachers?[0])
+        .collection(current_user.isTeacher
+            ? teacherRequestsCollection
+            : studentRequestsCollection)
+        .add(Request(
+          name: current_user.name,
+          userId: current_user.uid,
+          groupId: dataGroup.id!,
+          isPending: true,
+          id: '',
+        ).toMap())
+        .then((value) {
+      value.update({"id": value.id});
+      if (!current_user.isTeacher) {
+        FirebaseFirestore.instance
+            .collection(studentsCollection)
+            .doc(current_user.uid)
+            .collection(studentRequestsCollection)
+            .doc(value.id)
+            .set(Request(
+              name: current_user.name,
+              userId: current_user.uid,
+              groupId: dataGroup.id!,
+              isPending: true,
+              id: value.id,
+            ).toMap());
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Request Sent Successfully'),
+        ),
+      );
+    });
   }
 }
