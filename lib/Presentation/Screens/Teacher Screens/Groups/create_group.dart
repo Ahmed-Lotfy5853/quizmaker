@@ -22,6 +22,7 @@ class _CreateGroupState extends State<CreateGroup> {
   TextEditingController groupNameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   File? _image;
 
@@ -49,195 +50,205 @@ class _CreateGroupState extends State<CreateGroup> {
     double bigFontsize = MediaQuery.textScalerOf(context).scale(25);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SingleChildScrollView(
-        child: Container(
-          height: height,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(backgroundAsset),
-              fit: BoxFit.cover,
-            ),
-          ),
-          padding: EdgeInsets.only(left: 15, right: 15, top: 50),
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                Text(
-                  "Create new group",
-                  style: Theme.of(context)
-                      .textTheme
-                      .displaySmall!
-                      .copyWith(color: Colors.white),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Container(
+                height: height,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(backgroundAsset),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                SizedBox(
-                  height: height * 0.05,
-                ),
-                CircleAvatar(
-                  radius: width / 6.5,
-                  backgroundImage: _image != null ? FileImage(_image!) : null,
-                  backgroundColor:
-                      _image == null ? Colors.teal : Colors.transparent,
-                  child: _image == null
-                      ? Icon(Icons.groups,
-                          size: width / 7.5, color: Colors.white)
-                      : null,
-                ),
-                SizedBox(
-                  height: height * 0.02,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Choose an option"),
-                          content: SingleChildScrollView(
-                            child: ListBody(
-                              children: <Widget>[
-                                GestureDetector(
-                                  child: Text("Take a picture"),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    _pickImage(ImageSource.camera);
-                                  },
+                padding: EdgeInsets.only(left: 15, right: 15, top: 50),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      Text(
+                        "Create new group",
+                        style: Theme.of(context)
+                            .textTheme
+                            .displaySmall!
+                            .copyWith(color: Colors.white),
+                      ),
+                      SizedBox(
+                        height: height * 0.05,
+                      ),
+                      CircleAvatar(
+                        radius: width / 6.5,
+                        backgroundImage:
+                            _image != null ? FileImage(_image!) : null,
+                        backgroundColor:
+                            _image == null ? Colors.teal : Colors.transparent,
+                        child: _image == null
+                            ? Icon(Icons.groups,
+                                size: width / 7.5, color: Colors.white)
+                            : null,
+                      ),
+                      SizedBox(
+                        height: height * 0.02,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("Choose an option"),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        child: Text("Take a picture"),
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                          _pickImage(ImageSource.camera);
+                                        },
+                                      ),
+                                      SizedBox(height: height / 55),
+                                      GestureDetector(
+                                        child: Text("Select from gallery"),
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                          _pickImage(ImageSource.gallery);
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                SizedBox(height: height / 55),
-                                GestureDetector(
-                                  child: Text("Select from gallery"),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    _pickImage(ImageSource.gallery);
-                                  },
-                                ),
-                              ],
+                              );
+                            },
+                          );
+                        },
+                        child: Text(
+                          "Change Picture",
+                          style: TextStyle(
+                              fontSize: smallFontsize, color: Colors.black),
+                        ),
+                      ),
+                      SizedBox(
+                        height: height * 0.04,
+                      ),
+                      TextFormField(
+                        controller: groupNameController,
+                        decoration: const InputDecoration(
+                          hintText: 'Group Name',
+                          hintStyle: TextStyle(
+                            color: Colors.white,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.groups,
+                            color: Colors.white,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.white,
                             ),
                           ),
-                        );
-                      },
-                    );
-                  },
-                  child: Text(
-                    "Change Picture",
-                    style:
-                        TextStyle(fontSize: smallFontsize, color: Colors.black),
-                  ),
-                ),
-                SizedBox(
-                  height: height * 0.04,
-                ),
-                TextFormField(
-                  controller: groupNameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Group Name',
-                    hintStyle: TextStyle(
-                      color: Colors.white,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.groups,
-                      color: Colors.white,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value.length < 4) {
-                      return 'Group name must be at least 4 characters long';
-                    }
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.length < 4) {
+                            return 'Group name must be at least 4 characters long';
+                          }
 
-                    return null;
-                  },
-                  onChanged: (value) {},
-                  cursorColor: Colors.white,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: smallFontsize,
-                  ),
-                ),
-                SizedBox(
-                  height: height * 0.04,
-                ),
-                TextFormField(
-                  controller: descriptionController,
-                  keyboardType: TextInputType.multiline,
-                  decoration: const InputDecoration(
-                    hintText: 'Description',
-                    hintStyle: TextStyle(
-                      color: Colors.white,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.description,
-                      color: Colors.white,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
+                          return null;
+                        },
+                        onChanged: (value) {},
+                        cursorColor: Colors.white,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: smallFontsize,
+                        ),
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
+                      SizedBox(
+                        height: height * 0.04,
                       ),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value.length < 4) {
-                      return 'Username must be at least 4 characters long';
-                    }
+                      TextFormField(
+                        controller: descriptionController,
+                        keyboardType: TextInputType.multiline,
+                        decoration: const InputDecoration(
+                          hintText: 'Description',
+                          hintStyle: TextStyle(
+                            color: Colors.white,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.description,
+                            color: Colors.white,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.white,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.length < 4) {
+                            return 'Username must be at least 4 characters long';
+                          }
 
-                    return null;
-                  },
-                  onChanged: (value) {},
-                  cursorColor: Colors.white,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: smallFontsize,
-                  ),
-                ),
-                SizedBox(
-                  height: height * 0.04,
-                ),
-                InkWell(
-                  onTap: () {
-                    createGroup();
-                  },
-                  child: Container(
-                    height: height * 0.083,
-                    width: width / 2,
-                    decoration: BoxDecoration(
-                      color: Colors.tealAccent,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                        child: Text(
-                      "Create Group",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: smallFontsize,
+                          return null;
+                        },
+                        onChanged: (value) {},
+                        cursorColor: Colors.white,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: smallFontsize,
+                        ),
                       ),
-                    )),
+                      SizedBox(
+                        height: height * 0.04,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          createGroup();
+                        },
+                        child: Container(
+                          height: height * 0.083,
+                          width: width / 2,
+                          decoration: BoxDecoration(
+                            color: Colors.tealAccent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                              child: Text(
+                            "Create Group",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: smallFontsize,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
   void createGroup() async {
     if (formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
       if (_image == null) {
         FirebaseFirestore.instance
             .collection(groupsCollection)
@@ -278,16 +289,17 @@ class _CreateGroupState extends State<CreateGroup> {
                   name: groupNameController.text,
                   image: value,
                   description: descriptionController.text,
-                  createdBy: current_user!.name,
+                  createdBy: current_user.name,
                   createdAt: DateTime.now().toString(),
-                  teachers: [current_user!.uid!],
+                  teachers: [current_user.uid!],
+                  students: [],
                 ).toMap())
                 .then((value) {
               current_user.groups!.add(value.id);
               FirebaseFirestore.instance
                   .collection(teachersCollection)
-                  .doc(current_user!.uid)
-                  .update({"groups": current_user?.groups});
+                  .doc(current_user.uid)
+                  .update({"groups": current_user.groups});
               FirebaseFirestore.instance
                   .collection(groupsCollection)
                   .doc(value.id)
@@ -297,6 +309,9 @@ class _CreateGroupState extends State<CreateGroup> {
           });
         });
       }
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }

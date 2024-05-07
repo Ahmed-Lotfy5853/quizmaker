@@ -16,9 +16,11 @@ class RequestsCubit extends Cubit<RequestsState> {
     emit(RequestsInitial());
   }
 
+  /*
   Future<List<Request>> getTeacherRequests(String teacherId) async {
     emit(RequestsLoading());
-    return requestsRepository.getTeacherRequests(teacherId).then((value) {
+    return requestsRepository.
+    getTeacherRequests(teacherId).then((value) {
       emit(RequestsSuccess());
       return value;
     }).onError((error, stackTrace) {
@@ -27,6 +29,9 @@ class RequestsCubit extends Cubit<RequestsState> {
     });
 
   }
+
+   */
+  /*
   Future<List<Request>> getStudentRequests(String teacherId) async {
     emit(RequestsLoading());
     return requestsRepository.getStudentRequests(teacherId).then((value) {
@@ -39,19 +44,24 @@ class RequestsCubit extends Cubit<RequestsState> {
 
   }
 
-  Future<void> deleteRequest(String teacherId, String requestId , bool isTeacher) async {
+
+   */
+  Future<void> deleteRequest(
+      String teacherId, String requestId, bool isTeacher) async {
     emit(RequestsLoading());
-    requestsRepository.deleteRequest(teacherId, requestId , isTeacher);
+    requestsRepository.deleteRequest(teacherId, requestId, isTeacher);
     emit(RequestsInitial());
   }
 
-  Future<void> acceptRequest(String teacherId, String requestId , bool isTeacher) async {
+  Future<void> acceptRequest(
+      String teacherId, String requestId, bool isTeacher) async {
     emit(RequestsLoading());
-    requestsRepository.acceptRequest(teacherId, requestId , isTeacher).then((value) {
+    requestsRepository
+        .acceptRequest(teacherId, requestId, isTeacher)
+        .then((value) {
       emit(RequestsSuccess());
     }).onError((error, stackTrace) {
       emit(RequestsError());
     });
   }
-
 }

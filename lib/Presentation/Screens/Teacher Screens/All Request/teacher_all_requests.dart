@@ -1,21 +1,20 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_maker/Bussiness%20Logic/Cubit/Requests/requests_cubit.dart';
-
 import '../../../../../Constants/Strings.dart';
+import '../../../../Data/Models/group.dart';
 import '../../../../Data/Models/requests.dart';
-import '../teacher_all_requests.dart';
+import '../../../../Data/Models/user.dart';
 
-class StudentAllRequestsPage extends StatefulWidget {
-  const StudentAllRequestsPage({super.key});
+class TeacherAllRequestsPage extends StatefulWidget {
+  TeacherAllRequestsPage({super.key});
 
   @override
-  State<StudentAllRequestsPage> createState() => _StudentAllRequestsPageState();
+  State<TeacherAllRequestsPage> createState() => _TeacherAllRequestsPageState();
 }
 
-class _StudentAllRequestsPageState extends State<StudentAllRequestsPage> {
+class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
   double height(BuildContext context, double height) =>
       MediaQuery.sizeOf(context).height * height;
 
@@ -24,9 +23,11 @@ class _StudentAllRequestsPageState extends State<StudentAllRequestsPage> {
 
   double textFontSize(BuildContext context, double fontSize) =>
       MediaQuery.textScalerOf(context).scale(fontSize);
-  List<Request> requests = [];
+  List<Request> teachersRequests = [];
+  List<Request> studentsRequests = [];
   bool isTeacherSelected = false;
   List<String> accountTypes = ['Teacher', 'Student'];
+  List<Group> teacherGroups = [];
 
   @override
   void initState() {
@@ -44,10 +45,10 @@ class _StudentAllRequestsPageState extends State<StudentAllRequestsPage> {
         ),
         child: ListView.builder(
           itemBuilder: (context, index) {
-            return requestItem(requests[index]);
+            return requestItem(teachersRequests[index]);
           },
           padding: EdgeInsets.only(top: 10),
-          itemCount: requests.length,
+          itemCount: teachersRequests.length,
         ),
       ),
     );
@@ -79,74 +80,199 @@ class _StudentAllRequestsPageState extends State<StudentAllRequestsPage> {
     }
   }
 
-  Widget requestItem(Request requestModel) => InkWell(
-        onTap: () {
-          log('profile');
-        },
-        child: Container(
-          width: width(context, 1),
-          color: Colors.grey.shade200,
-          margin: EdgeInsets.only(
-            bottom: 10,
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            children: [
-              Image.asset(
-                requestModel.groupId,
-                width: width(context, 0.3),
-                fit: BoxFit.cover,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      " ${requestModel.name}",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          " ${requestModel.name}",
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall!
-                              .copyWith(color: Colors.grey),
-                        ),
-                        Expanded(
-                            child: Text(
-                          "  ${requestModel..userId}",
-                          style: Theme.of(context).textTheme.titleMedium!,
-                        )),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        requestButton(
-                            text: "ReApply",
-                            tap: () {
-                              log('reApply');
-                            },
-                            color: Colors.green),
-                        requestButton(
-                            text: "Remove",
-                            tap: () {
-                              log('remove');
-                            },
-                            color: Colors.red),
-                      ],
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      );
+  Widget requestItem(Request requestModel) {
+    log(requestModel.groupId);
+    log(teacherGroups.length.toString());
 
-  void fetchAllRequests() {
-    BlocProvider.of<RequestsCubit>(context).getStudentRequests(current_user!.uid! , );
-    BlocProvider.of<RequestsCubit>(context).getTeacherRequests(current_user!.uid! , );
+    Group? group =
+        !teacherGroups.any((element) => element.id == requestModel.groupId) ||
+                teacherGroups.isEmpty
+            ? null
+            : teacherGroups
+                .firstWhere((element) => element.id == requestModel.groupId);
+    log(group.toString());
+    return InkWell(
+      onTap: () {
+        log('profile');
+      },
+      child: Container(
+        width: width(context, 1),
+        color: Colors.grey.shade200,
+        margin: EdgeInsets.only(
+          bottom: 10,
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundImage: group != null
+                  ? NetworkImage(
+                      group.image!,
+                    )
+                  : AssetImage(profileAsset) as ImageProvider,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    " ${requestModel.name}",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Wants To Join",
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelSmall!
+                            .copyWith(color: Colors.grey),
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(
+                          child: Text(
+                        group?.name.toString() ?? '',
+                        style: Theme.of(context).textTheme.titleMedium!,
+                      )),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      requestButton(
+                          text: "Accept",
+                          tap: () {
+                            acceptRequest(requestModel, true);
+                            log('reApply');
+                          },
+                          color: Colors.green),
+                      requestButton(
+                          text: "Remove",
+                          tap: () {
+                            log('remove');
+                          },
+                          color: Colors.red),
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<List<Request>> getStudentRequests(String teacherId) async {
+    try {
+      List<Request> requests = [];
+      await FirebaseFirestore.instance
+          .collection(teachersCollection)
+          .doc(teacherId)
+          .collection(studentRequestsCollection)
+          .get()
+          .then((value) {
+        for (var element in value.docs) {
+          requests.add(Request.fromMap(element.data()));
+        }
+      });
+      return requests;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<Request>> getTeacherRequests(String teacherId) async {
+    try {
+      List<Request> requests = [];
+      await FirebaseFirestore.instance
+          .collection(teachersCollection)
+          .doc(teacherId)
+          .collection(teacherRequestsCollection)
+          .get()
+          .then((value) {
+        print("value ${value.docs}");
+        for (var element in value.docs) {
+          if (element.data()["isPendinq"] == "true") {
+            requests.add(Request.fromMap(element.data()));
+          }
+        }
+      });
+      return requests;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  fetchGroups(String groupId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection(groupsCollection)
+          .doc(groupId)
+          .get()
+          .then((value) {
+        if (value.data() != null) {
+          teacherGroups.add(Group.fromMap(value.data()!));
+          setState(() {});
+        }
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void fetchAllRequests() async {
+    teachersRequests = await getTeacherRequests(current_user.uid!);
+    studentsRequests = await getStudentRequests(current_user.uid!);
+    for (var request in teachersRequests) {
+      fetchGroups(request.groupId);
+    }
+    for (var request in studentsRequests) {
+      fetchGroups(request.groupId);
+    }
+    setState(() {});
+  }
+
+  void acceptRequest(Request requestModel, bool isTeacher) async {
+    DocumentReference docRef = FirebaseFirestore.instance
+        .collection(groupsCollection)
+        .doc(requestModel.groupId);
+    try {
+      await docRef.get().then((value) {
+        List<dynamic> currentArray =
+            List.from(value.get(isTeacher ? 'teachers' : 'students') ?? []);
+
+        currentArray.add(requestModel.userId);
+
+        docRef.update({isTeacher ? 'teachers' : 'students': currentArray});
+
+        print('Element added to the end of the Firestore array successfully.');
+
+        FirebaseFirestore.instance
+            .collection(teachersCollection)
+            .doc(current_user.uid!)
+            .collection(isTeacher
+                ? teacherRequestsCollection
+                : studentRequestsCollection)
+            .doc(requestModel.id)
+            .update({
+          "isPending": false,
+        });
+
+        var ref = FirebaseFirestore.instance
+            .collection(isTeacher ? teachersCollection : studentsCollection)
+            .doc(requestModel.userId);
+
+        ref.get().then((value) {
+          List<dynamic> currentArray = List.from(value.get("groups") ?? []);
+          currentArray.add(requestModel.groupId);
+          ref.update({"groups": currentArray});
+        });
+      });
+    } catch (e) {
+      rethrow;
+    }
   }
 }

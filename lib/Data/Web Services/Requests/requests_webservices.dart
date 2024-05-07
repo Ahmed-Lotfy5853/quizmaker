@@ -40,25 +40,6 @@ class RequestsWebServices {
     }
   }
 
-  Future<List<Request>> getStudentRequests(String teacherId) async {
-    try {
-      List<Request> requests = [];
-      firestore
-          .collection(teachersCollection)
-          .doc(teacherId)
-          .collection(studentRequestsCollection)
-          .get()
-          .then((value) {
-        for (var element in value.docs) {
-          requests.add(Request.fromMap(element.data()));
-        }
-      });
-      return requests;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   Future<List<Request>> getTeacherRequests(String teacherId) async {
     try {
       List<Request> requests = [];

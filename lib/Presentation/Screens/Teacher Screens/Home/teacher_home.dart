@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Constants/styles.dart';
+import 'package:quiz_maker/Data/Models/requests.dart';
 import '../../../../Constants/responsive.dart';
 import '../../../../Data/Models/group.dart';
 import '../Groups/teacher_group_details.dart';
@@ -236,9 +237,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
             child: ListTile(
               leading: CircleAvatar(
                 radius: width * 0.07,
-                child: dataGroup[index].image == null
-                    ? Icon(Icons.groups, size: width / 10, color: Colors.white)
-                    : null,
+                backgroundImage: dataGroup[index].image != null
+                    ? NetworkImage(dataGroup[index].image!)
+                    : AssetImage(profileAsset) as ImageProvider,
               ),
               title: Text(
                 dataGroup[index].name,
@@ -283,12 +284,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
                   children: [
                     CircleAvatar(
                       radius: width / 12,
-                      backgroundImage:
-                          group.image != '' ? NetworkImage(group.image!) : null,
-                      child: group.image == ''
-                          ? Icon(Icons.groups,
-                              size: width / 7.5, color: Colors.white)
-                          : null,
+                      backgroundImage: group.image != null
+                          ? NetworkImage(group.image!)
+                          : AssetImage(profileAsset) as ImageProvider,
                     ),
                     Text(
                       group.name,
@@ -303,22 +301,52 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
                       ),
                     ),
                     if (!isInGroup) // Add the tile conditionally based on isInGroup
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Text(
-                                'Join',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                      InkWell(
+                        onTap: () async {
+                          await FirebaseFirestore.instance
+                              .collection(teachersCollection)
+                              .doc(group.teachers?[0])
+                              .collection(current_user.isTeacher
+                                  ? teacherRequestsCollection
+                                  : studentRequestsCollection)
+                              .add(Request(
+                                name: current_user.name,
+                                userId: current_user.uid,
+                                groupId: dataGroup[index].id!,
+                                isPending: true,
+                                id: '',
+                              ).toMap())
+                              .then((value) {
+                            value.update({"id": value.id});
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Request Sent Successfully'),
+                              ),
+                            );
+
+                            setState(() {
+                              _searchController.clear();
+                            });
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 5),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Text(
+                                  'Join',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
