@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
+import 'package:quiz_maker/Data/Models/requests.dart';
 
 class TeacherAllRequestsPage extends StatefulWidget {
   const TeacherAllRequestsPage({super.key});
@@ -14,12 +16,32 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
   double height (BuildContext context,double height)=> MediaQuery.sizeOf(context).height*height;
   double width (BuildContext context,double width)=> MediaQuery.sizeOf(context).width*width;
   double textFontSize (BuildContext context,double fontSize)=> MediaQuery.textScalerOf(context).scale(fontSize);
-  List<RequestModel> requests=[
-    RequestModel(name: 'Mohamed', cover: onboardAsset, requestDate: '22/04/2024', group: 'Mechanics')
-    ,RequestModel(name: 'Ahmed', cover: onboardAsset, requestDate: '22/04/2024', group: 'Mechanics')
+  List<Request> requests=[
+
   ];
   bool isTeacherSelected=false;
   List<String> accountTypes=['Teacher','Student'];
+
+  getRequests(int requestType)async{
+    await FirebaseFirestore.instance.collection(teachersCollection).doc(current_user!.uid).collection("Requests").doc("${requestType}").collection(accountTypes[requestType]).get().then(
+            (value) {
+          setState(() {
+            requests.
+            clear();
+            value.docs.forEach((element) {
+              requests.add(Request.fromMap(element.data()));
+
+            });
+          });
+
+        });
+  }
+@override
+  void initState() {
+  getRequests(0);
+
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -33,11 +55,14 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
                 setState(() {
                   isTeacherSelected = true;
                 });
+                getRequests(0);
               },color: isTeacherSelected?Colors.grey:Colors.grey.shade400),
               requestButton(text: accountTypes[1], tap: () {
                 setState(() {
                   isTeacherSelected = false;
                 });
+                getRequests(1);
+
               },color: !isTeacherSelected?Colors.grey:Colors.grey.shade400),
             ],
           ),
@@ -61,7 +86,7 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
         focusColor: Colors.transparent,
         hoverColor: Colors.transparent,
         child: Container(
-            height: height(context,0.06),
+            height: height(context,0.1),
             color: color??Colors.red,
             alignment: Alignment.center,
             child: Text(text,
@@ -73,7 +98,7 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
 
   }
 }
-Widget requestItem(RequestModel requestModel
+Widget requestItem(Request requestModel
     )=>InkWell(
   onTap: (){
     log('profile');
@@ -88,7 +113,8 @@ Widget requestItem(RequestModel requestModel
     padding: EdgeInsets.symmetric(horizontal: 10),
     child:  Row(
       children: [
-        Image.asset(requestModel.cover,width: width(context,0.3),fit: BoxFit.cover,),
+        // ToDo add image
+        Image.asset(/*requestModel.groupId??*/"assets/images/profile_place_holder.png",width: width(context,0.3),fit: BoxFit.cover,),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,8 +122,8 @@ Widget requestItem(RequestModel requestModel
               Text(" ${requestModel.name}",style: Theme.of(context).textTheme.headlineSmall,),
               Row(
                 children: [
-                  Text(" ${requestModel.requestDate}",style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Colors.grey),),
-                  Expanded(child: Text("  ${requestModel.group}",style: Theme.of(context).textTheme.titleMedium!,)),
+                  Text(" ${requestModel.name}",style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Colors.grey),),
+                  Expanded(child: Text("  ${requestModel.groupId}",style: Theme.of(context).textTheme.titleMedium!,)),
 
                 ],
               ),
@@ -119,20 +145,4 @@ Widget requestItem(RequestModel requestModel
   ),
 );
 }
-class RequestModel{
-  int?id;
-  String name;
-  String cover;
-  String requestDate;
-  String group;
-  String? requestStatus;
 
-  RequestModel({
-    this.id,
-    required this.name,
-    required this.cover,
-    required this.requestDate,
-    required this.group,
-    this.requestStatus,
-  });
-}

@@ -20,9 +20,11 @@ class ChatModel{
   factory ChatModel.fromMap(Map<String, dynamic> map) {
     return ChatModel(
       id: map['id'] as String,
-      lastMessage: map['lastMessage'] as MessageModel,
-      messages: map['messages'] as List<MessageModel>,
-      user: map['user'] as UserModel,
+      lastMessage:   MessageModel.fromMap(map['lastMessage']),
+      messages: map["messages"] == null
+          ? []
+          :List<MessageModel>.from((map['messages']?? {})?.map((x) => MessageModel.fromMap(x))),
+      user: UserModel.fromMap(map['user']??{}),
     );
   }
 

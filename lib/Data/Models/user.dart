@@ -1,10 +1,10 @@
 class UserModel {
   late final String name;
   late final String email;
-  late final String uid;
-  late final String photoUrl;
+  String? uid;
+  String? photoUrl;
   late bool isTeacher;
-  late List<String>? groups;
+  late List<dynamic>? groups;
 
   UserModel({
     required this.name,
@@ -12,7 +12,7 @@ class UserModel {
     required this.uid,
     required this.photoUrl,
     required this.isTeacher,
-     this.groups,
+    this.groups,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,7 +20,7 @@ class UserModel {
       'name': this.name,
       'email': this.email,
       'uid': this.uid,
-      'photoUrl': this.photoUrl,
+      'cover': this.photoUrl,
       'isTeacher': this.isTeacher,
       'groups': this.groups,
     };
@@ -31,9 +31,10 @@ class UserModel {
       name: map['name'] as String,
       email: map['email'] as String,
       uid: map['uid'] as String,
-      photoUrl: map['photoUrl'] as String,
+      photoUrl: map['cover'] as String?,
       isTeacher: map['isTeacher'] as bool,
-      groups: map['groups'] as List<String>,
+      groups:
+          (map['groups'] as List<dynamic>).map((e) => e.toString()).toList(),
     );
   }
 

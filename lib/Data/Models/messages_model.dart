@@ -1,15 +1,16 @@
-class MessageModel {
-   String message;
-   bool? isMe;
-   String time;
 
-   MessageModel({
+class MessageModel {
+  String message;
+  bool? isMe;
+  String time;
+
+  MessageModel({
     required this.message,
-     this.isMe,
+    this.isMe,
     required this.time,
   });
 
-   Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'message': this.message,
       'isMe': this.isMe,
@@ -25,7 +26,7 @@ class MessageModel {
     );
   }
 
-   MessageModel copyWith({
+  MessageModel copyWith({
     String? message,
     bool? isMe,
     String? time,

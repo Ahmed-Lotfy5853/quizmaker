@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_maker/Presentation/Screens/Student%20Screens/inside_bottom_bar/chat/student_all_chats.dart';
 
 import '../../../../Constants/Strings.dart';
+import '../../../../Data/Models/chat_model.dart';
+import '../../../../Data/Models/messages_model.dart';
 import '../../../../Data/Models/user.dart';
 
 class ChatDetails extends StatefulWidget {
@@ -18,20 +19,20 @@ class _ChatDetailsState extends State<ChatDetails> {
   double width (BuildContext context,double width)=> MediaQuery.sizeOf(context).width*width;
   double textFontSize (BuildContext context,double fontSize)=> MediaQuery.textScalerOf(context).scale(fontSize);
 List<MessageModel> messages = [
-  MessageModel(sender: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:00', receiver: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:01', receiver: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:00', receiver: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:01', receiver: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:00', receiver: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:01', receiver: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:00', receiver: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:01', receiver: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:00', receiver: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:01', receiver: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:00', receiver: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:01', receiver: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:00', receiver: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
-  MessageModel(sender: UserModel(name: 'Ahmed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true), message: 'Hi', time: '5:01', receiver: UserModel(name: 'Mohamed', photoUrl: 'assets/images/ahmed.jpg', email: '', uid: '', isTeacher: true)),
+  MessageModel( message: 'Hi', time: '5:00', ),
+  MessageModel( message: 'Hi', time: '5:01', ),
+  MessageModel( message: 'Hi', time: '5:00', ),
+  MessageModel( message: 'Hi', time: '5:01', ),
+  MessageModel( message: 'Hi', time: '5:00', ),
+  MessageModel( message: 'Hi', time: '5:01', ),
+  MessageModel( message: 'Hi', time: '5:00', ),
+  MessageModel( message: 'Hi', time: '5:01', ),
+  MessageModel( message: 'Hi', time: '5:00', ),
+  MessageModel( message: 'Hi', time: '5:01', ),
+  MessageModel( message: 'Hi', time: '5:00', ),
+  MessageModel( message: 'Hi', time: '5:01', ),
+  MessageModel( message: 'Hi', time: '5:00', ),
+  MessageModel( message: 'Hi', time: '5:01', ),
 
 ];
   TextEditingController messageController = TextEditingController();
@@ -50,12 +51,12 @@ List<MessageModel> messages = [
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    image: AssetImage(widget.chat.user.photoUrl),
+                    image: AssetImage(widget.chat.user?.photoUrl??"assets/images/profile_place_holder.png"),
                     fit: BoxFit.fill
                 )
             ),
           ),
-          Text(widget.chat.user.name,style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),),
+          Text(widget.chat.user?.name??'',style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),),
 
 
         ]
@@ -140,7 +141,7 @@ List<MessageModel> messages = [
     );
   }
   Widget chatItem(MessageModel messageModel){
-    var isMe = messageModel.sender.name == 'Ahmed';
+    bool isMe = messageModel.isMe??false;
     return Container(
       width: width(context, 1),
       padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
@@ -157,7 +158,7 @@ List<MessageModel> messages = [
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                      image: AssetImage(widget.chat.user.photoUrl),
+                      image: AssetImage(widget.chat.user?.photoUrl??"assets/images/profile_place_holder.png"),
                       fit: BoxFit.fill
                   )
               ),

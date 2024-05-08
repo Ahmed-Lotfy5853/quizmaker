@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 
+import '../../../../../Data/Models/chat_model.dart';
+import '../../../../../Data/Models/messages_model.dart';
 import '../../../../../Data/Models/user.dart';
-import '../../../Teacher Screens/chat/chat_details.dart';
+import '../../Teacher Screens/chat/chat_details.dart';
 
 class StudentAllChats extends StatefulWidget {
   const StudentAllChats({super.key});
@@ -23,27 +25,17 @@ class _StudentAllChatsState extends State<StudentAllChats> {
   List<ChatModel> allChats = [
     ChatModel(
         user: UserModel(
-            name: 'Ahmed',
+            name: 'Mohamed',
             email: 'aa@a.com',
             uid: 'hjdshbjk',
-            photoUrl: onboardAsset,
+            photoUrl: 'jdsk',
             isTeacher: true),
-        chatId: 'hjsdhj',
         lastMessage: MessageModel(
-            message: 'hello',
-            time: DateTime.now().toString().substring(0, 19),
-            sender: UserModel(
-                name: 'Mohamed',
-                email: 'aa@a.com',
-                uid: 'hjdshbjk',
-                photoUrl: 'jdsk',
-                isTeacher: true),
-            receiver: UserModel(
-                name: 'Mohamed',
-                email: 'aa@a.com',
-                uid: 'hjdshbjk',
-                photoUrl: 'jdsk',
-                isTeacher: true))),
+          message: 'hello',
+          time: DateTime.now().toString().substring(0, 19),
+        ),
+        id: '',
+        messages: []),
     ChatModel(
         user: UserModel(
             name: 'Ahmed',
@@ -51,22 +43,12 @@ class _StudentAllChatsState extends State<StudentAllChats> {
             uid: 'hjdshbjk',
             photoUrl: onboardAsset,
             isTeacher: true),
-        chatId: 'hjsdhj',
+        id: 'hjsdhj',
         lastMessage: MessageModel(
-            message: 'hello',
-            time: DateTime.now().toString().substring(0, 19),
-            sender: UserModel(
-                name: 'Mohamed',
-                email: 'aa@a.com',
-                uid: 'hjdshbjk',
-                photoUrl: 'jdsk',
-                isTeacher: true),
-            receiver: UserModel(
-                name: 'Mohamed',
-                email: 'aa@a.com',
-                uid: 'hjdshbjk',
-                photoUrl: 'jdsk',
-                isTeacher: true))),
+          message: 'hello',
+          time: DateTime.now().toString().substring(0, 19),
+        ),
+        messages: []),
   ];
   bool isTeacherSelected = false;
   List<String> accountTypes = ['Teacher', 'Student'];
@@ -141,7 +123,8 @@ class _StudentAllChatsState extends State<StudentAllChats> {
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: AssetImage(chatModel.user.photoUrl),
+                        image: AssetImage(chatModel.user?.photoUrl ??
+                            "assets/images/profile_place_holder.png"),
                         fit: BoxFit.fill)),
               ),
               Expanded(
@@ -149,13 +132,13 @@ class _StudentAllChatsState extends State<StudentAllChats> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      " ${chatModel.user.name}",
+                      " ${chatModel.user?.name}",
                       maxLines: 1,
                       overflow: TextOverflow.clip,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
-                      "  ${chatModel.lastMessage.sender.name == 'Ahmed' ? 'You:' : ''}${chatModel.lastMessage.message}",
+                      "  ${chatModel.lastMessage.isMe ?? false ? 'You:' : ''}${chatModel.lastMessage.message}",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleSmall!,
@@ -174,31 +157,4 @@ class _StudentAllChatsState extends State<StudentAllChats> {
           ),
         ),
       );
-}
-
-class MessageModel {
-  UserModel sender;
-  UserModel receiver;
-  String message;
-  String time;
-
-  MessageModel({
-    required this.sender,
-    required this.receiver,
-    required this.message,
-    required this.time,
-  });
-}
-
-class ChatModel {
-  UserModel user;
-  String chatId;
-  // List<MessageModel> messages;
-  MessageModel lastMessage;
-
-  ChatModel({
-    required this.user,
-    required this.chatId,
-    required this.lastMessage,
-  });
 }

@@ -28,11 +28,16 @@ class _OnBoarding_ScreenState extends State<OnBoarding_Screen> {
     _sharedPreferences = await _prefs;
     setState(() {
       _isFirstTime = _sharedPreferences.getBool('isFirstTime') ?? true;
-      if (!_isFirstTime) {
-        // If it's not the first time, navigate to the home screen
-        Navigator.pushReplacementNamed(
+      if (!_isFirstTime && current_user!.uid == '') {
+        Navigator.pushNamed(context, registerScreen);
+      }
+      if (current_user!.uid != '') {
+        current_user!.isTeacher ? Navigator.pushReplacementNamed(
           context,
-          registerScreen,
+          teacherNavBar,
+        ): Navigator.pushReplacementNamed(
+          context,
+          bottomNavStudentScreen,
         );
       }
     });

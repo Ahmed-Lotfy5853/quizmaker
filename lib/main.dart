@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:quiz_maker/app_router.dart';
+import 'Constants/Strings.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -21,6 +22,7 @@ class Quiz_Maker extends StatelessWidget {
       title: 'Quiz Maker',
       debugShowCheckedModeBanner: false,
       onGenerateRoute: app_router.generateRoute,
+      initialRoute: registerScreen,
     );
   }
 }

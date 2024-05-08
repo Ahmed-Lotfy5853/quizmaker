@@ -1,13 +1,14 @@
+
 import 'package:quiz_maker/Data/Models/user.dart';
 
-class Requests{
+class Request{
   String id;
   String name;
   String groupId;
   bool isPending;
-  UserModel? userId;
+  String? userId;
 
-  Requests({
+  Request({
     required this.id,
     required this.name,
     required this.groupId,
@@ -25,24 +26,24 @@ class Requests{
     };
   }
 
-  factory Requests.fromMap(Map<String, dynamic> map) {
-    return Requests(
+  factory Request.fromMap(Map<String, dynamic> map) {
+    return Request(
       id: map['id'] as String,
       name: map['name'] as String,
       groupId: map['groupId'] as String,
       isPending: map['isPending'] as bool,
-      userId: map['userId'] as UserModel,
+      userId: map['userId'] as String,
     );
   }
 
-  Requests copyWith({
+  Request copyWith({
     String? id,
     String? name,
     String? groupId,
     bool? isPending,
-    UserModel? userId,
+    String? userId,
   }) {
-    return Requests(
+    return Request(
       id: id ?? this.id,
       name: name ?? this.name,
       groupId: groupId ?? this.groupId,

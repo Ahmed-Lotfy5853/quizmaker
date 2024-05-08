@@ -1,17 +1,16 @@
 class Question {
   String? id;
-   String question;
-   List<String> answers;
-int correctAnswer;
-String level;
+  String question;
+  List<dynamic> answers;
+  int correctAnswer;
+  String level;
 
-  Question({
-    this.id,
-    required this.question,
-    required this.answers,
-    required this.correctAnswer,
-    required this.level
-  });
+  Question(
+      {this.id,
+      required this.question,
+      required this.answers,
+      required this.correctAnswer,
+      required this.level});
 
   Map<String, dynamic> toMap() {
     return {
@@ -27,7 +26,7 @@ String level;
     return Question(
       id: map['id'] as String,
       question: map['question'] as String,
-      answers: map['answers'] as List<String>,
+      answers: map['answers'] as List<dynamic>,
       correctAnswer: map['correctAnswer'] as int,
       level: map['level'] as String,
     );

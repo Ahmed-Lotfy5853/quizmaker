@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:quiz_maker/Constants/styles.dart';
 
 import '../../../../Constants/Strings.dart';
 
@@ -19,7 +21,7 @@ class _Add_QuestionsState extends State<Add_Questions> {
   final formKey = GlobalKey<FormState>();
   String? difficulty;
 
-  String? correctAnswer;
+  int? correctAnswer;
 
   final text = 20.0;
 
@@ -31,7 +33,7 @@ class _Add_QuestionsState extends State<Add_Questions> {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: firstColor,
         title: Text(
           "Add Questions",
           style: TextStyle(
@@ -63,7 +65,7 @@ class _Add_QuestionsState extends State<Add_Questions> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 40 , vertical: 50),
+          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 50),
           decoration: BoxDecoration(
             color: Color.fromRGBO(244, 243, 243, 1),
           ),
@@ -279,44 +281,46 @@ class _Add_QuestionsState extends State<Add_Questions> {
               SizedBox(
                 width: 20,
               ),
-              SizedBox(
-                width: width / 3,
-                child: DropdownButtonFormField<String>(
-                  value: correctAnswer,
-                  onChanged: (value) {
-                    setState(() {
-                      correctAnswer = value;
-                    });
-                  },
-                  hint: Text("Answer"),
-                  items: ['1', '2', '3', '4']
-                      .map(
-                        (type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(
-                            type,
-                            style: TextStyle(color: Colors.black),
+              Expanded(
+                child: SizedBox(
+                  width: width / 3,
+                  child: DropdownButtonFormField<int>(
+                    value: correctAnswer,
+                    onChanged: (value) {
+                      setState(() {
+                        correctAnswer = value;
+                      });
+                    },
+                    hint: Text("Answer"),
+                    items: ['1', '2', '3', '4']
+                        .map(
+                          (type) => DropdownMenuItem(
+                            value: int.parse(type),
+                            child: Text(
+                              type,
+                              style: TextStyle(color: Colors.black),
+                            ),
                           ),
-                        ),
-                      )
-                      .toList(),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: text,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Correct Answer',
-                    hintStyle: TextStyle(
-                      color: Colors.tealAccent,
+                        )
+                        .toList(),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: text,
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black,
+                    decoration: InputDecoration(
+                      hintText: 'Correct Answer',
+                      hintStyle: TextStyle(
+                        color: Colors.tealAccent,
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
@@ -354,52 +358,54 @@ class _Add_QuestionsState extends State<Add_Questions> {
               SizedBox(
                 width: 20,
               ),
-              SizedBox(
-                width: width / 3,
-                child: DropdownButtonFormField<String>(
-                  value: correctAnswer,
-                  onChanged: (value) {
-                    setState(() {
-                      correctAnswer = value;
-                    });
-                  },
-                  hint: Text("Answer"),
-                  items: ["True", "False"]
-                      .map(
-                        (type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(
-                            type,
-                            style: TextStyle(color: Colors.black),
+              Expanded(
+                child: SizedBox(
+                  width: width / 3,
+                  child: DropdownButtonFormField<int>(
+                    value: correctAnswer,
+                    onChanged: (value) {
+                      setState(() {
+                        correctAnswer = value;
+                      });
+                    },
+                    hint: Text("Answer"),
+                    items: ["True", "False"]
+                        .map(
+                          (type) => DropdownMenuItem(
+                            value: type == "True" ? 0 : 1,
+                            child: Text(
+                              type,
+                              style: TextStyle(color: Colors.black),
+                            ),
                           ),
+                        )
+                        .toList(),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: text,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Correct Answer',
+                      hintStyle: TextStyle(
+                        color: Colors.tealAccent,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black,
                         ),
-                      )
-                      .toList(),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: text,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Correct Answer',
-                    hintStyle: TextStyle(
-                      color: Colors.tealAccent,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                      ),
-                    ),
+                    validator: (value) {
+                      if (correctAnswer == null) {
+                        return 'Enter a valid option';
+                      }
+                    },
                   ),
-                  validator: (value) {
-                    if (correctAnswer == null || correctAnswer!.isEmpty) {
-                      return 'Enter a valid option';
-                    }
-                  },
                 ),
               ),
             ],
@@ -419,8 +425,25 @@ class _Add_QuestionsState extends State<Add_Questions> {
       print(option3.text);
       print(option4.text);
       print(correctAnswer);
-
-      // ToDo : add question
+      if (isMcq) {
+        Navigator.pop(context, {
+          'difficulty': difficulty,
+          'question': question.text,
+          'option1': option1.text,
+          'option2': option2.text,
+          'option3': option3.text,
+          'option4': option4.text,
+          'correctAnswer': correctAnswer,
+        });
+      } else {
+        Navigator.pop(context, {
+          'difficulty': difficulty,
+          'question': question.text,
+          'option1': option1.text,
+          'option2': option2.text,
+          'correctAnswer': correctAnswer,
+        });
+      }
     }
   }
 }
