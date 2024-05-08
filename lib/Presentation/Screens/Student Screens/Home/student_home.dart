@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
@@ -126,6 +127,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     });
     return userGroupsList;
   }
+  TextEditingController _joinController = TextEditingController();
+
 
   @override
   void initState() {
@@ -149,38 +152,101 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       padding: const EdgeInsets.all(2),
       child: Column(
         children: [
-          TextFormField(
-            style: TextStyle(color: nextColor),
-            controller: _searchController,
-            onChanged: (value) {
-              print(value);
-              setState(() {
-                isSearch = value.isNotEmpty;
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  style: TextStyle(color: nextColor),
+                  controller: _searchController,
+                  onChanged: (value) {
+                    print(value);
+                    setState(() {
+                      isSearch = value.isNotEmpty;
 
-                _searchresult = _searchMethed(value.toLowerCase());
-                //check user is searching or no
-                print("isSearching: $isSearch");
-              });
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: firstColor,
-              prefixIcon: Icon(
-                Icons.search,
-                color: nextColor,
+                      _searchresult = _searchMethed(value.toLowerCase());
+                      //check user is searching or no
+                      print("isSearching: $isSearch");
+                    });
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: firstColor,
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: nextColor,
+                    ),
+                    labelStyle: TextStyle(color: nextColor),
+                    hintText: 'Group Name',
+                    hintStyle: TextStyle(color: nextColor),
+
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                        BorderSide(color: Colors.transparent, width: 0.0)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent, width: 0.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
-              labelStyle: TextStyle(color: nextColor),
-              hintText: 'Search About Groups ...',
-              hintStyle: TextStyle(color: nextColor),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      BorderSide(color: Colors.transparent, width: 0.0)),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent, width: 0.0),
-                borderRadius: BorderRadius.circular(10),
+              Expanded(
+                child: TextFormField(
+                  style: TextStyle(color: nextColor),
+                  controller: _joinController,
+
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: firstColor,
+                    prefixIconConstraints: BoxConstraints(minWidth: 60.0, minHeight: 60.0),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: InkWell(
+                        onTap: ()async{
+                          FirebaseFirestore.instance.collection(groupsCollection).doc(_joinController.text).get().then((value) async {
+                            if(value.data() == null){
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Group Not Found'),
+                                  )
+                              );
+                            }
+                            else{
+                              Group dataGroup = Group.fromMap(value.data()!);
+                              putRequestToGroup(dataGroup);
+
+                            }
+                          });
+
+                        },
+                        child: Container(
+                          width: 25,
+                          alignment: Alignment.center,
+                          child: Text("Join",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20
+                            ),),
+                        ),
+                      ),
+                    ),
+                    labelStyle: TextStyle(color: nextColor),
+                    hintText: 'Group ID',
+                    hintStyle: TextStyle(color: nextColor),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                        BorderSide(color: Colors.transparent, width: 0.0)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent, width: 0.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
-            ),
+
+            ],
           ),
           Expanded(
             child: _searchController.text.isEmpty
@@ -288,7 +354,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                       radius: width / 12,
                       backgroundImage: group.image != null
                           ? NetworkImage(group.image!)
-                          : AssetImage(profileAsset) as ImageProvider,
+                          : AssetImage(groupAsset) as ImageProvider,
                     ),
                     Text(
                       group.name,

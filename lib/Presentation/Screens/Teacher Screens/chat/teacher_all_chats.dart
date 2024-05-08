@@ -26,26 +26,19 @@ class _TeacherAllChatsState extends State<TeacherAllChats> {
   bool isTeacherSelected=false;
   List<String> accountTypes=['Teacher','Student'];
   getChats(int requestType)async{
-    await FirebaseFirestore.instance.collection(teachersCollection).doc(current_user!.uid).collection("Chats").doc("${requestType}").collection(accountTypes[requestType]).get().then(
-            (value) {
-              log("all chats ${value.docs.length}");
-          setState(() {
-            allChats.
-            clear();
-            value.docs.forEach((element) {
-              getUser(element.data()['user']).then((value) {
-                allChats.add(ChatModel(id: element.data()['id'], lastMessage: MessageModel.fromMap(element.data()['lastMessage']), messages:  element.data()["messages"] == null
-                    ? []
-                    :List<MessageModel>.from((element.data()['messages']?? {})?.map((x) => MessageModel.fromMap(x))), user: UserModel.fromMap(value)));
-
-              });
+    await FirebaseFirestore.instance.collection(teachersCollection).doc(current_user.uid).collection("Chats").snapshots().listen((event) {
+    log("all chats ${event.docs.length}");
+    setState(() {
+      allChats.
+      clear();
+      event.docs.forEach((element) {
+        allChats.add(ChatModel.fromMap(element.data()));
 
 
-            });
-          });
-          log("all chats ${allChats.length}");
 
-        });
+      });
+    });
+    log("all chats ${allChats.length}"); });
   }
   Future<Map<String, dynamic>> getUser(String id)async{
     DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await FirebaseFirestore.instance.collection(accountTypes[isTeacherSelected?1:0]+'s').doc(id).get();
@@ -63,6 +56,7 @@ class _TeacherAllChatsState extends State<TeacherAllChats> {
     return  SafeArea(
       child: Column(
         children: [
+/*
           Row(
             children: [
               requestButton(text: accountTypes[0], tap: () {
@@ -81,6 +75,7 @@ class _TeacherAllChatsState extends State<TeacherAllChats> {
               },color: !isTeacherSelected?Colors.grey:Colors.grey.shade400),
             ],
           ),
+*/
 
           Expanded(
             child: ListView.builder(itemBuilder: (context, index) {
@@ -141,7 +136,8 @@ class _TeacherAllChatsState extends State<TeacherAllChats> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                image: AssetImage(chatModel.user?.photoUrl??"assets/images/profile_place_holder.png"),
+                  image: chatModel.user?.photoUrl!=null?NetworkImage(chatModel.user!.photoUrl!):AssetImage("assets/images/profile_place_holder.png") as ImageProvider,
+
                 fit: BoxFit.fill
               )
             ),
@@ -160,7 +156,10 @@ class _TeacherAllChatsState extends State<TeacherAllChats> {
 
               ],),
           ),
-          Text(" ${chatModel.lastMessage.time}",style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Colors.grey),),
+          Text(" ${chatModel.lastMessage.time}",
+            maxLines: 1,
+            overflow: TextOverflow.clip,
+            style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Colors.grey),),
 
         ],
       ),

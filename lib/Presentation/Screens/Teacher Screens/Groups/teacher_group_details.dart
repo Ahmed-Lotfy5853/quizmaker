@@ -310,7 +310,9 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                                 context: context,
                                 builder: (context) => Padding(
                                   padding: EdgeInsets.only(
-                                      top: height(context) * 0.1),
+                                      top: height(context) * 0.1,
+                                      bottom: MediaQuery.of(context).viewInsets.bottom
+                                  ),
                                   child: commentTextField(
                                     context,
                                     posts[index].id!,

@@ -22,7 +22,7 @@ class Quiz_Maker extends StatelessWidget {
       title: 'Quiz Maker',
       debugShowCheckedModeBanner: false,
       onGenerateRoute: app_router.generateRoute,
-      initialRoute: registerScreen,
+      initialRoute: onBoardingScreen,
     );
   }
 }

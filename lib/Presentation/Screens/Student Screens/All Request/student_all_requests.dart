@@ -111,11 +111,11 @@ class _StudentAllRequestsPageState extends State<StudentAllRequestsPage> {
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundImage: group != null
+              backgroundImage: (group != null && group.image != null)
                   ? NetworkImage(
-                      group.image!,
+                group.image!,
                     )
-                  : AssetImage(profileAsset) as ImageProvider,
+                  : AssetImage(groupAsset) as ImageProvider,
             ),
             Expanded(
               child: Column(

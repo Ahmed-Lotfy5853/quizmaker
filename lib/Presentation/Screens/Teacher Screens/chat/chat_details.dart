@@ -26,7 +26,7 @@ List<MessageModel> messages = [
   TextEditingController messageController = TextEditingController();
 @override
   void initState() {
-    FirebaseFirestore.instance.collection(current_user.isTeacher?teachersCollection:studentsCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).collection("Messages").orderBy("time", descending: true).snapshots().listen((event) {
+    FirebaseFirestore.instance.collection(current_user.isTeacher?teachersCollection:studentsCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).collection("Messages").orderBy("time", descending: false).snapshots().listen((event) {
  log('event ${event.docs.isNotEmpty}');
   if(event.docs.isNotEmpty){
     setState(() {
@@ -140,7 +140,7 @@ List<MessageModel> messages = [
 
               if(current_user.isTeacher){
               await  FirebaseFirestore.instance.collection(teachersCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).collection("Messages").add(message.toMap());
-              await  FirebaseFirestore.instance.collection(teachersCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).update({
+              await  FirebaseFirestore.instance.collection(teachersCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).set({
                 "id":widget.chat.user!.uid,
                 "lastMessage":message.toMap(),
               "user":widget.chat.user!.toMap(),
@@ -148,7 +148,7 @@ List<MessageModel> messages = [
               }
               else{
                await FirebaseFirestore.instance.collection(studentsCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).collection("Messages").add(message.toMap());
-               await FirebaseFirestore.instance.collection(studentsCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).update({
+               await FirebaseFirestore.instance.collection(studentsCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).set({
                  "id":widget.chat.user!.uid,
                  "lastMessage":message.toMap(),
                  "user":widget.chat.user!.toMap(),
@@ -156,7 +156,7 @@ List<MessageModel> messages = [
 
               } if(widget.chat.user!.isTeacher){
               await  FirebaseFirestore.instance.collection(teachersCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).collection("Messages").add(message.toMap());
-              await  FirebaseFirestore.instance.collection(teachersCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).update({
+              await  FirebaseFirestore.instance.collection(teachersCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).set({
                 "id":current_user.uid,
                 "lastMessage":message.toMap(),
                 "user":current_user.toMap(),
@@ -164,7 +164,7 @@ List<MessageModel> messages = [
               }
               else{
                await FirebaseFirestore.instance.collection(studentsCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).collection("Messages").add(message.toMap());
-               await FirebaseFirestore.instance.collection(studentsCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).update({
+               await FirebaseFirestore.instance.collection(studentsCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).set({
                  "id":current_user.uid,
                  "lastMessage":message.toMap(),
                  "user":current_user.toMap(),
