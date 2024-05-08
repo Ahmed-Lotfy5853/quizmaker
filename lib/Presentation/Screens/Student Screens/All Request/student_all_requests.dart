@@ -19,9 +19,12 @@ class _StudentAllRequestsPageState extends State<StudentAllRequestsPage> {
       MediaQuery.sizeOf(context).width * width;
   double textFontSize(BuildContext context, double fontSize) =>
       MediaQuery.textScalerOf(context).scale(fontSize);
-  List<Request> requests = [];
+  List<Request> requests = [
+    Request(id: '0', name: 'name', groupId: '0', isPending: true, userId: '0')
+  ];
   bool isTeacherSelected = false;
   List<String> accountTypes = ['Teacher', 'Student'];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

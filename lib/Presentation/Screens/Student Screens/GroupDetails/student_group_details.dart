@@ -12,6 +12,7 @@ import '../../../../Data/Models/exam_model.dart';
 import '../../../../Data/Models/group.dart';
 import '../../../../Data/Models/post_model.dart';
 import '../../../../Data/Models/user.dart';
+import '../../group_info_screen.dart';
 
 class StudentGroupDetails extends StatefulWidget {
   StudentGroupDetails({
@@ -128,6 +129,24 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
   List<ExamModel> exams = [];
   List<UserModel> teachers = [];
   List<UserModel> students = [];
+  Future<List<UserModel>> getMembers({required List<String>members, required String type})  async{
+    List<UserModel> users = [UserModel(name: '', email: '', uid: '', photoUrl: '', isTeacher: true)];
+    for (String element in members) {
+      await    FirebaseFirestore.instance.collection(type).doc(element).get().then((value) {
+        UserModel user = UserModel.fromMap(value.data()!);
+        log("user name ${user.name}");
+        users.add(user);
+        log("user name ${(users).last.name}");
+        log("users length ${(users).length}");
+
+      });
+
+    }
+    return users;
+
+
+  }
+
 
   @override
   void initState() {
@@ -151,6 +170,22 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
             widget.group.name,
             style: TextStyle(color: Colors.white),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: IconButton(
+                  onPressed: () async {
+                    List<UserModel> teachersMembers = await getMembers(members: widget.group.teachers??[], type: teachersCollection);
+                    List<UserModel> studentsMembers = await getMembers(members: widget.group.students??[], type: studentsCollection);
+                    Navigator.push(context, MaterialPageRoute(builder: (_)=>GroupInfoScreen(groupName: widget.group.name, teachers: teachersMembers, students:studentsMembers,)));
+                  },
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Colors.white,
+                  )
+              ),
+            )
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(
