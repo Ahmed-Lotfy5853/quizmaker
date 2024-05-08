@@ -327,7 +327,15 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
             .update({
           "isPending": false,
         });
-
+        if (isTeacher) {
+          setState(() {
+            teachersRequests.remove(requestModel);
+          });
+        } else {
+          setState(() {
+            studentsRequests.remove(requestModel);
+          });
+        }
         var ref = FirebaseFirestore.instance
             .collection(isTeacher ? teachersCollection : studentsCollection)
             .doc(requestModel.userId);
@@ -350,6 +358,10 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
           });
         });
       });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        "Request Accepted",
+      )));
     } catch (e) {
       rethrow;
     }
@@ -366,6 +378,15 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
           .update({
         "isPending": null,
       });
+      if (isTeacher) {
+        setState(() {
+          teachersRequests.remove(requestModel);
+        });
+      } else {
+        setState(() {
+          studentsRequests.remove(requestModel);
+        });
+      }
       if (!isTeacher) {
         FirebaseFirestore.instance
             .collection(studentsCollection)
@@ -376,6 +397,10 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
           "isPending": null,
         });
       }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        "Request Rejected",
+      )));
     } catch (e) {
       rethrow;
     }

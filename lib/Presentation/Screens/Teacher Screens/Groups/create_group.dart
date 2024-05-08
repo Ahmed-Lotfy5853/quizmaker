@@ -47,7 +47,6 @@ class _CreateGroupState extends State<CreateGroup> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     double smallFontsize = MediaQuery.textScalerOf(context).scale(20);
-    double bigFontsize = MediaQuery.textScalerOf(context).scale(25);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: isLoading
@@ -254,8 +253,7 @@ class _CreateGroupState extends State<CreateGroup> {
             .collection(groupsCollection)
             .add(Group(
               name: groupNameController.text,
-              image:
-                  null, // Assuming you handle null images appropriately in your Group model
+              image: null,
               description: descriptionController.text,
               createdBy: current_user.name,
               createdAt: DateTime.now().toString(),
@@ -304,7 +302,7 @@ class _CreateGroupState extends State<CreateGroup> {
                   .collection(groupsCollection)
                   .doc(value.id)
                   .update({"id": value.id});
-              Navigator.pop(context);
+              Navigator.popAndPushNamed(context, teacherNavBar);
             });
           });
         });

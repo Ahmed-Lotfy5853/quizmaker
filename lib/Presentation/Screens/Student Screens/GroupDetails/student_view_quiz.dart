@@ -368,7 +368,7 @@ class _StudentViewQuizState extends State<StudentViewQuiz> {
 
   String formatDateString(String dateString) {
     DateTime dateTime = DateTime.parse(dateString);
-    String formattedDate = "${dateTime.month}/${dateTime.day}";
+    String formattedDate = "${dateTime.day}/${dateTime.month}";
     String formattedTime =
         "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
     String period = dateTime.hour < 12 ? 'am' : 'pm';
