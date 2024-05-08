@@ -9,7 +9,6 @@ const String bottomNavStudentScreen = '/BottomNavStudentScreen';
 const String groupDetailsViewScreen = "/groupDetailsViewScreen";
 const String addTeachertoGroup = "/addTeachertoGroup";
 const String questionsBankScreen = "/questionsBankScreen";
-const String createQuizScreen = "/createQuizScreen";
 const String teacherViewQuizScreen = '/teacherQuizScreen';
 const String studentViewQuizScreen = '/studentViewQuizScreen';
 const String startQuizScreen = '/startQuizScreen';

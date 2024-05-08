@@ -70,23 +70,6 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
     });
   }
 
-  getComments(String postId) async {
-    await FirebaseFirestore.instance
-        .collection(groupsCollection)
-        .doc(widget.group.id)
-        .collection(postsCollection)
-        .doc(postId)
-        .collection(commentsCollection)
-        .get()
-        .then((value) {
-      for (var element in value.docs) {
-        setState(() {
-          comments.add(CommentModel.fromMap(element.data()));
-        });
-      }
-    });
-  }
-
   Future<List<UserModel>> getTeachers(List<String> teacherIds) async {
     print("teacherIds ${teacherIds.length}");
     await FirebaseFirestore.instance
@@ -178,7 +161,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                 child: Icon(Icons.edit),
                 label: 'Create post',
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (_) => PostCreate(
@@ -190,7 +173,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
               child: Icon(Icons.lightbulb_outline),
               label: 'Create a quiz',
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (_) => Create_Quiz(
@@ -203,7 +186,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                 child: Icon(Icons.settings),
                 label: 'Group Settings',
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (_) => GroupSettings(
@@ -320,23 +303,20 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                             )),
                         IconButton(
                             onPressed: () async {
-                              comments = [];
-                              await getComments(posts[index].id!).then((value) {
-                                showModalBottomSheet(
-                                  backgroundColor: Colors.white,
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (context) => Padding(
-                                    padding: EdgeInsets.only(
-                                        top: height(context) * 0.1),
-                                    child: commentTextField(
-                                      context,
-                                      comments,
-                                      posts[index].id!,
-                                    ),
+                              await getComments(posts[index].id!);
+                              showModalBottomSheet(
+                                backgroundColor: Colors.white,
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (context) => Padding(
+                                  padding: EdgeInsets.only(
+                                      top: height(context) * 0.1),
+                                  child: commentTextField(
+                                    context,
+                                    posts[index].id!,
                                   ),
-                                );
-                              });
+                                ),
+                              );
                             },
                             icon: Icon(Icons.chat)),
                       ],
@@ -371,7 +351,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
 
   String formatDateString(String dateString) {
     DateTime dateTime = DateTime.parse(dateString);
-    String formattedDate = "${dateTime.month}/${dateTime.day}";
+    String formattedDate = "${dateTime.day}/${dateTime.month}";
     String formattedTime =
         "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
     String period = dateTime.hour < 12 ? 'am' : 'pm';
@@ -384,7 +364,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
     return "$formattedDate $formattedTime $period";
   }
 
-  Widget commentTextField(context, List<CommentModel> comments, String postId) {
+  Widget commentTextField(context, String postId) {
     log("comments $comments");
 
     /*
@@ -415,7 +395,11 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                     );
                   },
                 )
-              : Container(),
+              : Container(
+                  child: Center(
+                    child: Text("No Comments yet"),
+                  ),
+                ),
         ),
         Row(
           children: [
@@ -498,6 +482,27 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
     await getStudents(widget.group.students!);
   }
 
+  getComments(String postId) async {
+    comments.clear();
+    log("get comments");
+    await FirebaseFirestore.instance
+        .collection(groupsCollection)
+        .doc(widget.group.id)
+        .collection(postsCollection)
+        .doc(postId)
+        .collection(commentsCollection)
+        .get()
+        .then((value) {
+      log("comments length ${value.docs.length}");
+      for (var element in value.docs) {
+        log("adding comment ${element.data()}");
+        setState(() {
+          comments.add(CommentModel.fromMap(element.data()));
+        });
+      }
+    });
+  }
+
   void addCommentToPost(String postId) async {
     if (formKey.currentState!.validate()) {
       await FirebaseFirestore.instance
@@ -512,12 +517,14 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                   isTeacher: current_user.isTeacher)
               .toMap())
           .then((value) {
-        formKey.currentState!.reset();
-        comments.add(CommentModel(
-            comment: messageController.text.trim(),
-            userId: current_user.uid!,
-            isTeacher: current_user.isTeacher));
-        setState(() {});
+        setState(() {
+          messageController.clear();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Your Comment Added Successfully"),
+          ),
+        );
       });
     }
   }

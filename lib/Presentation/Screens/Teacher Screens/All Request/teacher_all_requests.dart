@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import '../../../../../Constants/Strings.dart';
 import '../../../../Data/Models/group.dart';
 import '../../../../Data/Models/requests.dart';
@@ -25,8 +27,7 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
       MediaQuery.textScalerOf(context).scale(fontSize);
   List<Request> teachersRequests = [];
   List<Request> studentsRequests = [];
-  bool isTeacherSelected = false;
-  List<String> accountTypes = ['Teacher', 'Student'];
+  bool isTeacherSelected = true;
   List<Group> teacherGroups = [];
 
   @override
@@ -37,19 +38,77 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage(backgroundAsset), fit: BoxFit.cover),
-        ),
-        child: ListView.builder(
-          itemBuilder: (context, index) {
-            return requestItem(teachersRequests[index]);
-          },
-          padding: EdgeInsets.only(top: 10),
-          itemCount: teachersRequests.length,
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+            image: AssetImage(backgroundAsset), fit: BoxFit.cover),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isTeacherSelected = true;
+                  });
+                },
+                child: Container(
+                  height: height(context, 0.06),
+                  width: width(context, 0.5),
+                  color: isTeacherSelected ? Colors.teal : Colors.grey,
+                  child: Center(
+                      child: Text(
+                    'Teachers',
+                    style: TextStyle(color: Colors.white),
+                  )),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isTeacherSelected = false;
+                  });
+                },
+                child: Container(
+                  height: height(context, 0.06),
+                  width: width(context, 0.5),
+                  color: isTeacherSelected ? Colors.grey : Colors.teal,
+                  child: Center(
+                      child: Text(
+                    'Students',
+                    style: TextStyle(color: Colors.white),
+                  )),
+                ),
+              ),
+            ],
+          ),
+          if (isTeacherSelected)
+            SizedBox(
+              height: height(context, 0.6),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return requestItem(
+                      teachersRequests[index], isTeacherSelected);
+                },
+                padding: EdgeInsets.only(top: 10),
+                itemCount: teachersRequests.length,
+              ),
+            ),
+          if (!isTeacherSelected)
+            SizedBox(
+                height: height(context, 0.6),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return requestItem(
+                        studentsRequests[index], isTeacherSelected);
+                  },
+                  padding: EdgeInsets.only(top: 10),
+                  itemCount: studentsRequests.length,
+                ))
+        ],
       ),
     );
   }
@@ -80,7 +139,7 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
     }
   }
 
-  Widget requestItem(Request requestModel) {
+  Widget requestItem(Request requestModel, bool isTeacher) {
     log(requestModel.groupId);
     log(teacherGroups.length.toString());
 
@@ -144,13 +203,14 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
                       requestButton(
                           text: "Accept",
                           tap: () {
-                            acceptRequest(requestModel, true);
+                            acceptRequest(requestModel, isTeacher);
                             log('reApply');
                           },
                           color: Colors.green),
                       requestButton(
                           text: "Remove",
                           tap: () {
+                            rejectRequest(requestModel, isTeacher);
                             log('remove');
                           },
                           color: Colors.red),
@@ -175,7 +235,10 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
           .get()
           .then((value) {
         for (var element in value.docs) {
-          requests.add(Request.fromMap(element.data()));
+          print("element ${element.data()}");
+          if (element.data()["isPending"] == true) {
+            requests.add(Request.fromMap(element.data()));
+          }
         }
       });
       return requests;
@@ -195,7 +258,9 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
           .then((value) {
         print("value ${value.docs}");
         for (var element in value.docs) {
-          if (element.data()["isPendinq"] == "true") {
+          print("element ${element.data()}");
+          if (element.data()["isPending"] == true) {
+            print("element ${element.data()}");
             requests.add(Request.fromMap(element.data()));
           }
         }
@@ -226,6 +291,8 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
   void fetchAllRequests() async {
     teachersRequests = await getTeacherRequests(current_user.uid!);
     studentsRequests = await getStudentRequests(current_user.uid!);
+    print("teachersRequests ${teachersRequests.length}");
+    print("studentsRequests ${studentsRequests.length}");
     for (var request in teachersRequests) {
       fetchGroups(request.groupId);
     }
@@ -260,7 +327,15 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
             .update({
           "isPending": false,
         });
-
+        if (isTeacher) {
+          setState(() {
+            teachersRequests.remove(requestModel);
+          });
+        } else {
+          setState(() {
+            studentsRequests.remove(requestModel);
+          });
+        }
         var ref = FirebaseFirestore.instance
             .collection(isTeacher ? teachersCollection : studentsCollection)
             .doc(requestModel.userId);
@@ -268,9 +343,64 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
         ref.get().then((value) {
           List<dynamic> currentArray = List.from(value.get("groups") ?? []);
           currentArray.add(requestModel.groupId);
-          ref.update({"groups": currentArray});
+          ref.update({"groups": currentArray}).then((value) {
+            if (!isTeacher) {
+              FirebaseFirestore.instance
+                  .collection(studentsCollection)
+                  .doc(requestModel.userId)
+                  .collection(studentRequestsCollection)
+                  .doc(requestModel.id)
+                  .update({
+                "isPending": false,
+              });
+            }
+            return;
+          });
         });
       });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        "Request Accepted",
+      )));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void rejectRequest(Request requestModel, bool isTeacher) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection(teachersCollection)
+          .doc(current_user.uid!)
+          .collection(
+              isTeacher ? teacherRequestsCollection : studentRequestsCollection)
+          .doc(requestModel.id)
+          .update({
+        "isPending": null,
+      });
+      if (isTeacher) {
+        setState(() {
+          teachersRequests.remove(requestModel);
+        });
+      } else {
+        setState(() {
+          studentsRequests.remove(requestModel);
+        });
+      }
+      if (!isTeacher) {
+        FirebaseFirestore.instance
+            .collection(studentsCollection)
+            .doc(requestModel.userId)
+            .collection(studentRequestsCollection)
+            .doc(requestModel.id)
+            .update({
+          "isPending": null,
+        });
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        "Request Rejected",
+      )));
     } catch (e) {
       rethrow;
     }

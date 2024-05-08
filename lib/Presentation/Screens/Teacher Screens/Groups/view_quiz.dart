@@ -30,13 +30,11 @@ class ViewQuiz extends StatefulWidget {
 
 class _ViewQuizState extends State<ViewQuiz> {
   List<CommentModel> comments = [];
+  late ExamModel examModel;
   final formKey = GlobalKey<FormState>();
   final commentController = TextEditingController();
 
   Future<List<CommentModel>> getComments(String groupId) async {
-    print("in the get comments");
-    print(groupId);
-    print(widget.exam.id);
     await FirebaseFirestore.instance
         .collection(groupsCollection)
         .doc(groupId)
@@ -45,8 +43,6 @@ class _ViewQuizState extends State<ViewQuiz> {
         .collection(commentsCollection)
         .get()
         .then((value) {
-      print("docs" + value.docs.length.toString());
-
       for (var element in value.docs) {
         comments.add(CommentModel.fromMap(element.data()));
       }
@@ -57,6 +53,7 @@ class _ViewQuizState extends State<ViewQuiz> {
 
   @override
   void initState() {
+    examModel = widget.exam;
     getAllData();
     super.initState();
   }
@@ -67,7 +64,7 @@ class _ViewQuizState extends State<ViewQuiz> {
       backgroundColor: Colors.teal,
       appBar: AppBar(
         title: Text(
-          widget.exam.name,
+          examModel.name,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -76,6 +73,7 @@ class _ViewQuizState extends State<ViewQuiz> {
         ),
         centerTitle: true,
         backgroundColor: Colors.teal,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -101,7 +99,7 @@ class _ViewQuizState extends State<ViewQuiz> {
                           TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                     ),
                     Expanded(
-                      child: widget.exam.results?.isEmpty ?? true
+                      child: examModel.results?.isEmpty ?? true
                           ? Center(
                               child: Text(
                               "No Students yet",
@@ -114,9 +112,8 @@ class _ViewQuizState extends State<ViewQuiz> {
                               ),
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
-                                UserModel? student = getUserInfo(widget
-                                    .exam.results![index]["id"]
-                                    .toString());
+                                UserModel? student = getUserInfo(
+                                    examModel.results![index].keys.first);
 
                                 return ListTile(
                                   leading: CircleAvatar(
@@ -124,7 +121,7 @@ class _ViewQuizState extends State<ViewQuiz> {
                                         ? NetworkImage(student.photoUrl!)
                                         : AssetImage(profileAsset)
                                             as ImageProvider,
-                                    radius: 30,
+                                    radius: 20,
                                   ),
                                   title: Text(
                                     (index + 1).toString() +
@@ -133,13 +130,14 @@ class _ViewQuizState extends State<ViewQuiz> {
                                     style: TextStyle(fontSize: 20),
                                   ),
                                   trailing: Text(
-                                    widget.exam.results![index]["degree"]
+                                    examModel.results![index][
+                                            "${examModel.results![index].keys.first}"]
                                         .toString(),
                                     style: TextStyle(fontSize: 20),
                                   ),
                                 );
                               },
-                              itemCount: widget.exam.results!.length,
+                              itemCount: examModel.results!.length,
                             ),
                     ),
                   ],
@@ -268,6 +266,7 @@ class _ViewQuizState extends State<ViewQuiz> {
   }
 
   void getAllData() async {
+    await getExam();
     await getComments(widget.group.id!);
     setState(() {});
   }
@@ -292,10 +291,27 @@ class _ViewQuizState extends State<ViewQuiz> {
 
     for (var student in widget.students) {
       if (student.uid == id) {
+        print("Student found");
         return student;
       }
     }
 
+    print("Student not found");
+
     return null;
+  }
+
+  getExam() async {
+    await FirebaseFirestore.instance
+        .collection(groupsCollection)
+        .doc(widget.group.id)
+        .collection(quizCollection)
+        .doc(widget.exam.id)
+        .get()
+        .then((value) {
+      setState(() {
+        examModel = ExamModel.fromMap(value.data()!);
+      });
+    });
   }
 }

@@ -68,23 +68,6 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
     });
   }
 
-  getComments(String postId) async {
-    await FirebaseFirestore.instance
-        .collection(groupsCollection)
-        .doc(widget.group.id)
-        .collection(postsCollection)
-        .doc(postId)
-        .collection(commentsCollection)
-        .get()
-        .then((value) {
-      for (var element in value.docs) {
-        setState(() {
-          comments.add(CommentModel.fromMap(element.data()));
-        });
-      }
-    });
-  }
-
   Future<List<UserModel>> getTeachers(List<String> teacherIds) async {
     print("teacherIds ${teacherIds.length}");
     await FirebaseFirestore.instance
@@ -295,23 +278,20 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
                             )),
                         IconButton(
                             onPressed: () async {
-                              comments = [];
-                              await getComments(posts[index].id!).then((value) {
-                                showModalBottomSheet(
-                                  backgroundColor: Colors.white,
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (context) => Padding(
-                                    padding: EdgeInsets.only(
-                                        top: height(context) * 0.1),
-                                    child: commentTextField(
-                                      context,
-                                      comments,
-                                      posts[index].id!,
-                                    ),
+                              await getComments(posts[index].id!);
+                              showModalBottomSheet(
+                                backgroundColor: Colors.white,
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (context) => Padding(
+                                  padding: EdgeInsets.only(
+                                      top: height(context) * 0.1),
+                                  child: commentTextField(
+                                    context,
+                                    posts[index].id!,
                                   ),
-                                );
-                              });
+                                ),
+                              );
                             },
                             icon: Icon(Icons.chat)),
                       ],
@@ -328,7 +308,7 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
 
   String formatDateString(String dateString) {
     DateTime dateTime = DateTime.parse(dateString);
-    String formattedDate = "${dateTime.month}/${dateTime.day}";
+    String formattedDate = "${dateTime.day}/${dateTime.month}";
     String formattedTime =
         "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
     String period = dateTime.hour < 12 ? 'am' : 'pm';
@@ -341,8 +321,8 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
     return "$formattedDate $formattedTime $period";
   }
 
-  Widget commentTextField(context, List<CommentModel> comments, String postId) {
-    log("comments $comments");
+  Widget commentTextField(context, String postId) {
+    log("comments ${comments.length}");
 
     /*
     TODO:
@@ -372,7 +352,13 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
                     );
                   },
                 )
-              : Container(),
+              : Container(
+                  child: Center(
+                    child: Text(
+                      "No comments yet",
+                    ),
+                  ),
+                ),
         ),
         Row(
           children: [
@@ -408,8 +394,7 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
             IconButton(
               onPressed: () {
                 addCommentToPost(postId);
-                messageController.clear();
-                setState(() {});
+                Navigator.pop(context);
               },
               icon: Container(
                 width: height(context) * 0.07,
@@ -472,13 +457,36 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
                   isTeacher: current_user.isTeacher)
               .toMap())
           .then((value) {
-        formKey.currentState!.reset();
-        comments.add(CommentModel(
-            comment: messageController.text.trim(),
-            userId: current_user.uid!,
-            isTeacher: current_user.isTeacher));
-        setState(() {});
+        setState(() {
+          messageController.clear();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Your Comment Added Successfully"),
+          ),
+        );
       });
     }
+  }
+
+  getComments(String postId) async {
+    comments.clear();
+    log("get comments");
+    await FirebaseFirestore.instance
+        .collection(groupsCollection)
+        .doc(widget.group.id)
+        .collection(postsCollection)
+        .doc(postId)
+        .collection(commentsCollection)
+        .get()
+        .then((value) {
+      log("comments length ${value.docs.length}");
+      for (var element in value.docs) {
+        log("adding comment ${element.data()}");
+        setState(() {
+          comments.add(CommentModel.fromMap(element.data()));
+        });
+      }
+    });
   }
 }

@@ -1,20 +1,18 @@
-
 import 'package:quiz_maker/Data/Models/user.dart';
 
-class Request{
+class Request {
   String id;
   String name;
   String groupId;
-  bool isPending;
+  bool? isPending;
   String? userId;
 
-  Request({
-    required this.id,
-    required this.name,
-    required this.groupId,
-    required this.isPending,
-    required this.userId
-  });
+  Request(
+      {required this.id,
+      required this.name,
+      required this.groupId,
+      required this.isPending,
+      required this.userId});
 
   Map<String, dynamic> toMap() {
     return {
@@ -31,7 +29,7 @@ class Request{
       id: map['id'] as String,
       name: map['name'] as String,
       groupId: map['groupId'] as String,
-      isPending: map['isPending'] as bool,
+      isPending: map['isPending'] as bool?,
       userId: map['userId'] as String,
     );
   }

@@ -92,114 +92,127 @@ class _StartQuizState extends State<StartQuiz> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Text(
-                      'Timer: $timeString',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  Text(
-                    myQuestions[currentIndex].question,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  Container(
-                    height: 300,
-                    child: ListView.separated(
-                        separatorBuilder: (context, index) => Divider(
-                              height: 1,
-                            ),
-                        itemCount: myQuestions[currentIndex].answers.length,
-                        itemBuilder: (context, index) {
-                          List<String> characters = ['A.', 'B.', 'C.', 'D.'];
-                          selectedAnswerIndex > 0 ? selectedAnswerIndex : 0;
-                          return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedAnswerIndex = index;
-                                  print(index);
-                                });
-                              },
-                              child: Container(
-                                  color: selectedAnswerIndex == index
-                                      ? Colors.green.withOpacity(0.5)
-                                      : Colors.white,
-                                  child: ListTile(
-                                    leading: Text(
-                                      characters[index],
-                                      style: TextStyle(fontSize: 15.0),
-                                    ),
-                                    title: Text(
-                                      myQuestions[currentIndex].answers[index],
-                                      style: TextStyle(fontSize: 16.0),
-                                    ),
-                                    trailing: selectedAnswerIndex == index
-                                        ? Icon(
-                                            Icons.check,
-                                            color: Colors.green,
-                                          )
-                                        : null,
-                                  )));
-                        }),
-                  ),
-                  SizedBox(height: 20.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Check answer and move to the next question
-                      if (currentIndex < myQuestions.length - 1) {
-                        log.log("the answer is " +
-                            myQuestions[currentIndex].correctAnswer.toString());
-                        log.log(
-                            "user answer is " + selectedAnswerIndex.toString());
-
-                        setState(() {
-                          if (myQuestions[currentIndex].correctAnswer ==
-                              selectedAnswerIndex) {
-                            score++;
-                          }
-
-                          currentIndex++;
-                        });
-                        log.log("current score is " + score.toString());
-                      } else {
-                        if (myQuestions[currentIndex].correctAnswer ==
-                            selectedAnswerIndex) {
-                          score++;
-                        }
-                        // Quiz completed
-                        addStudentScore();
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Quiz Completed'),
-                            content: Text(
-                                'Congratulations! You have completed the quiz. Your score is $score out of ${myQuestions.length}.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                },
-                                child: Text('OK'),
-                              ),
-                            ],
+              child: myQuestions.isEmpty
+                  ? Center(child: CircularProgressIndicator())
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            'Timer: $timeString',
+                            style: TextStyle(fontSize: 24),
                           ),
-                        );
-                      }
-                    },
-                    child: Text('Next'),
-                  ),
-                ],
-              ),
+                        ),
+                        SizedBox(height: 20.0),
+                        Text(
+                          myQuestions[currentIndex].question,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 20.0),
+                        Container(
+                          height: 300,
+                          child: ListView.separated(
+                              separatorBuilder: (context, index) => Divider(
+                                    height: 1,
+                                  ),
+                              itemCount:
+                                  myQuestions[currentIndex].answers.length,
+                              itemBuilder: (context, index) {
+                                List<String> characters = [
+                                  'A.',
+                                  'B.',
+                                  'C.',
+                                  'D.'
+                                ];
+                                selectedAnswerIndex > 0
+                                    ? selectedAnswerIndex
+                                    : 0;
+                                return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedAnswerIndex = index;
+                                        print(index);
+                                      });
+                                    },
+                                    child: Container(
+                                        color: selectedAnswerIndex == index
+                                            ? Colors.green.withOpacity(0.5)
+                                            : Colors.white,
+                                        child: ListTile(
+                                          leading: Text(
+                                            characters[index],
+                                            style: TextStyle(fontSize: 15.0),
+                                          ),
+                                          title: Text(
+                                            myQuestions[currentIndex]
+                                                .answers[index],
+                                            style: TextStyle(fontSize: 16.0),
+                                          ),
+                                          trailing: selectedAnswerIndex == index
+                                              ? Icon(
+                                                  Icons.check,
+                                                  color: Colors.green,
+                                                )
+                                              : null,
+                                        )));
+                              }),
+                        ),
+                        SizedBox(height: 20.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            // Check answer and move to the next question
+                            if (currentIndex < myQuestions.length - 1) {
+                              log.log("the answer is " +
+                                  myQuestions[currentIndex]
+                                      .correctAnswer
+                                      .toString());
+                              log.log("user answer is " +
+                                  selectedAnswerIndex.toString());
+
+                              setState(() {
+                                if (myQuestions[currentIndex].correctAnswer ==
+                                    selectedAnswerIndex) {
+                                  score++;
+                                }
+
+                                currentIndex++;
+                              });
+                              log.log("current score is " + score.toString());
+                            } else {
+                              if (myQuestions[currentIndex].correctAnswer ==
+                                  selectedAnswerIndex) {
+                                score++;
+                              }
+                              // Quiz completed
+                              addStudentScore();
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Quiz Completed'),
+                                  content: Text(
+                                      'Congratulations! You have completed the quiz. Your score is $score out of ${myQuestions.length}.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                          child: Text('Next'),
+                        ),
+                      ],
+                    ),
             ),
           ),
         ),
@@ -293,6 +306,9 @@ class _StartQuizState extends State<StartQuiz> {
       currentArray.add(newMap);
 
       await docRef.update({'results': currentArray});
+      setState(() {
+        widget.exam.results?.add({current_user.uid.toString(): score});
+      });
 
       print('Map added to the Firestore document successfully.');
     } catch (e) {
