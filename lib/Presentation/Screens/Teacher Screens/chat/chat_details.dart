@@ -154,7 +154,10 @@ List<MessageModel> messages = [
                  "user":widget.chat.user!.toMap(),
                });
 
-              } if(widget.chat.user!.isTeacher){
+              }
+              message.isMe = false;
+
+              if(widget.chat.user!.isTeacher){
               await  FirebaseFirestore.instance.collection(teachersCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).collection("Messages").add(message.toMap());
               await  FirebaseFirestore.instance.collection(teachersCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).set({
                 "id":current_user.uid,
@@ -171,6 +174,8 @@ List<MessageModel> messages = [
                });
 
               }
+              message.isMe = true;
+
 
 
 
@@ -189,6 +194,7 @@ List<MessageModel> messages = [
   }
   Widget chatItem(MessageModel messageModel){
     bool isMe = messageModel.isMe??false;
+    log("is me ${isMe}");
     return Container(
       width: width(context, 1),
       padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),

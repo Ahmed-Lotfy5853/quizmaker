@@ -327,7 +327,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
                 radius: width * 0.07,
                 backgroundImage: dataGroup[index].image != null
                     ? NetworkImage(dataGroup[index].image!)
-                    : AssetImage(profileAsset) as ImageProvider,
+                    : AssetImage(groupAsset) as ImageProvider,
               ),
               title: Text(
                 dataGroup[index].name,
@@ -374,7 +374,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
                       radius: width / 12,
                       backgroundImage: group.image != null
                           ? NetworkImage(group.image!)
-                          : AssetImage(profileAsset) as ImageProvider,
+                          : AssetImage(groupAsset) as ImageProvider,
                     ),
                     Text(
                       group.name,

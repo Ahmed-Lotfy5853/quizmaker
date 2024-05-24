@@ -8,6 +8,7 @@ import 'package:quiz_maker/Data/Models/exam_model.dart';
 import 'package:quiz_maker/Data/Models/question.dart';
 
 import '../../../../../Constants/Strings.dart';
+import '../../../../../Constants/responsive.dart';
 import '../../../../../Constants/styles.dart';
 import '../../../../../Data/Models/group.dart';
 
@@ -38,7 +39,32 @@ class _StartQuizState extends State<StartQuiz> {
     timer = Timer.periodic(oneSecond, (timer) {
       setState(() {
         if (_secondsRemaining == 0) {
-          timer.cancel(); // Cancel the timer when countdown reaches zero
+          timer.cancel();// Cancel the timer when countdown reaches zero
+          // Check answer and move to the next question
+          if (myQuestions[currentIndex].correctAnswer ==
+              selectedAnswerIndex) {
+            score++;
+          }
+          // Quiz completed
+          addStudentScore();
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Quiz Completed'),
+              content: Text(
+                  'Congratulations! You have completed the quiz. Your score is $score out of ${myQuestions.length}.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
         } else {
           _secondsRemaining--;
         }

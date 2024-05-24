@@ -165,11 +165,11 @@ class _TeacherAllRequestsPageState extends State<TeacherAllRequestsPage> {
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundImage: group != null
+              backgroundImage: (group != null && group.image != null)
                   ? NetworkImage(
-                      group.image!,
-                    )
-                  : AssetImage(profileAsset) as ImageProvider,
+                group.image!,
+              )
+                  : AssetImage(groupAsset) as ImageProvider,
             ),
             Expanded(
               child: Column(
