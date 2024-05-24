@@ -97,7 +97,9 @@ class _StudentAllChatsState extends State<StudentAllChats> {
     }
   }
 
-  Widget chatItem(ChatModel chatModel) => InkWell(
+  Widget chatItem(ChatModel chatModel) {
+    log('chatModel ${chatModel.user?.photoUrl}');
+    return InkWell(
         onTap: () {
           log('chat');
           Navigator.push(
@@ -123,8 +125,9 @@ class _StudentAllChatsState extends State<StudentAllChats> {
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: AssetImage(chatModel.user?.photoUrl ??
-                            "assets/images/profile_place_holder.png"),
+                        image: (chatModel.user?.photoUrl!=null&&chatModel.user!.photoUrl!.startsWith('h'))?NetworkImage(chatModel.user!.photoUrl!):AssetImage("assets/images/profile_place_holder.png") as ImageProvider,
+
+
                         fit: BoxFit.fill)),
               ),
               Expanded(
@@ -157,4 +160,5 @@ class _StudentAllChatsState extends State<StudentAllChats> {
           ),
         ),
       );
+  }
 }

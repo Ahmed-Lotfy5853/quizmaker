@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../../Constants/Strings.dart';
 
-
 class StudentProfile extends StatefulWidget {
   const StudentProfile({super.key});
 
@@ -12,16 +11,10 @@ class StudentProfile extends StatefulWidget {
 }
 
 class _StudentProfileState extends State<StudentProfile> {
-
-
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   bool isEditing = false;
   GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -54,18 +47,18 @@ class _StudentProfileState extends State<StudentProfile> {
                   onPressed: () {
                     isEditing
                         ? setState(() {
-                      isEditing = false;
-                    })
+                            isEditing = false;
+                          })
                         : setState(() {
-                      isEditing = true;
-                      // ToDo add save profile info logic
-                    });
+                            isEditing = true;
+                            // ToDo add save profile info logic
+                          });
                   },
                   child: Text(
                     isEditing ? "Done" : "Edit",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: smallerTextFontsize +5,
+                      fontSize: smallerTextFontsize + 5,
                     ),
                   ),
                 ),
@@ -73,13 +66,18 @@ class _StudentProfileState extends State<StudentProfile> {
             ),
             Text(
               "Profile",
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold , color: Colors.white),
+              style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             CircleAvatar(
               radius: 70,
-              backgroundImage: current_user!.photoUrl != null
-                  ? NetworkImage(current_user!.photoUrl!)
+              backgroundImage: current_user.photoUrl != null
+                  ? NetworkImage(current_user.photoUrl!)
                   : Image.asset("assets/images/profile_place_holder.png").image,
             ),
             SizedBox(
@@ -90,8 +88,7 @@ class _StudentProfileState extends State<StudentProfile> {
               child: TextFormField(
                 controller: nameController,
                 enabled: isEditing,
-
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Name',
                   hintStyle: TextStyle(
                     color: Colors.white,
@@ -104,15 +101,12 @@ class _StudentProfileState extends State<StudentProfile> {
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.white,
-
                     ),
-
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.white,
                     ),
-
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
@@ -128,7 +122,7 @@ class _StudentProfileState extends State<StudentProfile> {
                 },
                 onChanged: (value) {},
                 cursorColor: Colors.white,
-                style:  TextStyle(
+                style: TextStyle(
                   color: Colors.black,
                   fontSize: bigTextFontsize,
                 ),
@@ -136,11 +130,11 @@ class _StudentProfileState extends State<StudentProfile> {
             ),
             SizedBox(height: 20),
             SizedBox(
-              width: width *0.80,
+              width: width * 0.80,
               child: TextFormField(
                 controller: emailController,
                 enabled: isEditing,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Email',
                   hintStyle: TextStyle(
                     color: Colors.white,
@@ -160,13 +154,12 @@ class _StudentProfileState extends State<StudentProfile> {
                       color: Colors.white,
                     ),
                   ),
-                  disabledBorder:  OutlineInputBorder(
+                  disabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.white,
                     ),
                   ),
                 ),
-
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||

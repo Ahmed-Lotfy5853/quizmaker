@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
@@ -12,6 +13,7 @@ import 'package:quiz_maker/Presentation/Screens/Student%20Screens/GroupDetails/s
 
 import '../../../../../Constants/responsive.dart';
 import '../../../../../Data/Models/group.dart';
+import '../../../../Data/Models/requests.dart';
 import '../../Teacher Screens/Groups/teacher_group_details.dart';
 
 class StudentHomeScreen extends StatefulWidget {
@@ -125,6 +127,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     });
     return userGroupsList;
   }
+  TextEditingController _joinController = TextEditingController();
+
 
   @override
   void initState() {
@@ -148,38 +152,101 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       padding: const EdgeInsets.all(2),
       child: Column(
         children: [
-          TextFormField(
-            style: TextStyle(color: nextColor),
-            controller: _searchController,
-            onChanged: (value) {
-              print(value);
-              setState(() {
-                isSearch = value.isNotEmpty;
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  style: TextStyle(color: nextColor),
+                  controller: _searchController,
+                  onChanged: (value) {
+                    print(value);
+                    setState(() {
+                      isSearch = value.isNotEmpty;
 
-                _searchresult = _searchMethed(value.toLowerCase());
-                //check user is searching or no
-                print("isSearching: $isSearch");
-              });
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: firstColor,
-              prefixIcon: Icon(
-                Icons.search,
-                color: nextColor,
+                      _searchresult = _searchMethed(value.toLowerCase());
+                      //check user is searching or no
+                      print("isSearching: $isSearch");
+                    });
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: firstColor,
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: nextColor,
+                    ),
+                    labelStyle: TextStyle(color: nextColor),
+                    hintText: 'Group Name',
+                    hintStyle: TextStyle(color: nextColor),
+
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                        BorderSide(color: Colors.transparent, width: 0.0)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent, width: 0.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
-              labelStyle: TextStyle(color: nextColor),
-              hintText: 'Search About Groups ...',
-              hintStyle: TextStyle(color: nextColor),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      BorderSide(color: Colors.transparent, width: 0.0)),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent, width: 0.0),
-                borderRadius: BorderRadius.circular(10),
+              Expanded(
+                child: TextFormField(
+                  style: TextStyle(color: nextColor),
+                  controller: _joinController,
+
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: firstColor,
+                    prefixIconConstraints: BoxConstraints(minWidth: 60.0, minHeight: 60.0),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: InkWell(
+                        onTap: ()async{
+                          FirebaseFirestore.instance.collection(groupsCollection).doc(_joinController.text).get().then((value) async {
+                            if(value.data() == null){
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Group Not Found'),
+                                  )
+                              );
+                            }
+                            else{
+                              Group dataGroup = Group.fromMap(value.data()!);
+                              putRequestToGroup(dataGroup);
+
+                            }
+                          });
+
+                        },
+                        child: Container(
+                          width: 25,
+                          alignment: Alignment.center,
+                          child: Text("Join",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20
+                            ),),
+                        ),
+                      ),
+                    ),
+                    labelStyle: TextStyle(color: nextColor),
+                    hintText: 'Group ID',
+                    hintStyle: TextStyle(color: nextColor),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                        BorderSide(color: Colors.transparent, width: 0.0)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent, width: 0.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
-            ),
+
+            ],
           ),
           Expanded(
             child: _searchController.text.isEmpty
@@ -285,12 +352,9 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   children: [
                     CircleAvatar(
                       radius: width / 12,
-                      backgroundImage:
-                          group.image != '' ? NetworkImage(group.image!) : null,
-                      child: group.image == ''
-                          ? Icon(Icons.groups,
-                              size: width / 7.5, color: Colors.white)
-                          : null,
+                      backgroundImage: group.image != null
+                          ? NetworkImage(group.image!)
+                          : AssetImage(groupAsset) as ImageProvider,
                     ),
                     Text(
                       group.name,
@@ -305,22 +369,32 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                       ),
                     ),
                     if (!isInGroup) // Add the tile conditionally based on isInGroup
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Text(
-                                'Join',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                      InkWell(
+                        onTap: () {
+                          putRequestToGroup(dataGroup[index]);
+
+                          setState(() {
+                            _searchController.clear();
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 5),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Text(
+                                  'Join',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -363,5 +437,43 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       }
     });
     log("user groups ${userGroups.length}");
+  }
+
+  void putRequestToGroup(Group dataGroup) async {
+    await FirebaseFirestore.instance
+        .collection(teachersCollection)
+        .doc(dataGroup.teachers?[0])
+        .collection(current_user.isTeacher
+            ? teacherRequestsCollection
+            : studentRequestsCollection)
+        .add(Request(
+          name: current_user.name,
+          userId: current_user.uid,
+          groupId: dataGroup.id!,
+          isPending: true,
+          id: '',
+        ).toMap())
+        .then((value) {
+      value.update({"id": value.id});
+      if (!current_user.isTeacher) {
+        FirebaseFirestore.instance
+            .collection(studentsCollection)
+            .doc(current_user.uid)
+            .collection(studentRequestsCollection)
+            .doc(value.id)
+            .set(Request(
+              name: current_user.name,
+              userId: current_user.uid,
+              groupId: dataGroup.id!,
+              isPending: true,
+              id: value.id,
+            ).toMap());
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Request Sent Successfully'),
+        ),
+      );
+    });
   }
 }

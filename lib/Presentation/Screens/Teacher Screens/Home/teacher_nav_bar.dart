@@ -10,9 +10,9 @@ import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/Home/teacher_h
 import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/Settings/setting.dart';
 import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/chat/teacher_all_chats.dart';
 import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/Profile/teacher_profile.dart';
-import 'package:quiz_maker/Presentation/Screens/Teacher%20Screens/teacher_all_requests.dart';
 
 import '../../../../Constants/styles.dart';
+import '../All Request/teacher_all_requests.dart';
 
 class TeacherNavBar extends StatefulWidget {
   const TeacherNavBar({super.key});
@@ -22,13 +22,6 @@ class TeacherNavBar extends StatefulWidget {
 }
 
 class _TeacherNavBarState extends State<TeacherNavBar> {
-  bool isSearching = false;
-  List<Group> searchedGroups = [];
-  TextEditingController nameController = TextEditingController();
-
-  bool isEditing = false;
-  GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
-
   var index = 2;
 
   List<Widget> _screens = [

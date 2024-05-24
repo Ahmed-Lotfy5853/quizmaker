@@ -12,6 +12,7 @@ import '../../../../Data/Models/exam_model.dart';
 import '../../../../Data/Models/group.dart';
 import '../../../../Data/Models/post_model.dart';
 import '../../../../Data/Models/user.dart';
+import '../../group_info_screen.dart';
 
 class StudentGroupDetails extends StatefulWidget {
   StudentGroupDetails({
@@ -67,23 +68,6 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
     });
   }
 
-  getComments(String postId) async {
-    await FirebaseFirestore.instance
-        .collection(groupsCollection)
-        .doc(widget.group.id)
-        .collection(postsCollection)
-        .doc(postId)
-        .collection(commentsCollection)
-        .get()
-        .then((value) {
-      for (var element in value.docs) {
-        setState(() {
-          comments.add(CommentModel.fromMap(element.data()));
-        });
-      }
-    });
-  }
-
   Future<List<UserModel>> getTeachers(List<String> teacherIds) async {
     print("teacherIds ${teacherIds.length}");
     await FirebaseFirestore.instance
@@ -128,6 +112,24 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
   List<ExamModel> exams = [];
   List<UserModel> teachers = [];
   List<UserModel> students = [];
+  Future<List<UserModel>> getMembers({required List<String>members, required String type})  async{
+    List<UserModel> users = [UserModel(name: '', email: '', uid: '', photoUrl: '', isTeacher: true)];
+    for (String element in members) {
+      await    FirebaseFirestore.instance.collection(type).doc(element).get().then((value) {
+        UserModel user = UserModel.fromMap(value.data()!);
+        log("user name ${user.name}");
+        users.add(user);
+        log("user name ${(users).last.name}");
+        log("users length ${(users).length}");
+
+      });
+
+    }
+    return users;
+
+
+  }
+
 
   @override
   void initState() {
@@ -151,6 +153,22 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
             widget.group.name,
             style: TextStyle(color: Colors.white),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: IconButton(
+                  onPressed: () async {
+                    List<UserModel> teachersMembers = await getMembers(members: widget.group.teachers??[], type: teachersCollection);
+                    List<UserModel> studentsMembers = await getMembers(members: widget.group.students??[], type: studentsCollection);
+                    Navigator.push(context, MaterialPageRoute(builder: (_)=>GroupInfoScreen(groupName: widget.group.name, teachers: teachersMembers, students:studentsMembers,)));
+                  },
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Colors.white,
+                  )
+              ),
+            )
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -260,23 +278,22 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
                             )),
                         IconButton(
                             onPressed: () async {
-                              comments = [];
-                              await getComments(posts[index].id!).then((value) {
-                                showModalBottomSheet(
-                                  backgroundColor: Colors.white,
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (context) => Padding(
-                                    padding: EdgeInsets.only(
-                                        top: height(context) * 0.1),
-                                    child: commentTextField(
-                                      context,
-                                      comments,
-                                      posts[index].id!,
-                                    ),
+                              await getComments(posts[index].id!);
+                              showModalBottomSheet(
+                                backgroundColor: Colors.white,
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (context) => Padding(
+                                  padding: EdgeInsets.only(
+                                      top: height(context) * 0.1,
+                                  bottom: MediaQuery.of(context).viewInsets.bottom
                                   ),
-                                );
-                              });
+                                  child: commentTextField(
+                                    context,
+                                    posts[index].id!,
+                                  ),
+                                ),
+                              );
                             },
                             icon: Icon(Icons.chat)),
                       ],
@@ -287,13 +304,14 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
             ],
           ),
         ),
+
       ),
     );
   }
 
   String formatDateString(String dateString) {
     DateTime dateTime = DateTime.parse(dateString);
-    String formattedDate = "${dateTime.month}/${dateTime.day}";
+    String formattedDate = "${dateTime.day}/${dateTime.month}";
     String formattedTime =
         "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
     String period = dateTime.hour < 12 ? 'am' : 'pm';
@@ -306,8 +324,8 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
     return "$formattedDate $formattedTime $period";
   }
 
-  Widget commentTextField(context, List<CommentModel> comments, String postId) {
-    log("comments $comments");
+  Widget commentTextField(context, String postId) {
+    log("comments ${comments.length}");
 
     /*
     TODO:
@@ -337,7 +355,13 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
                     );
                   },
                 )
-              : Container(),
+              : Container(
+                  child: Center(
+                    child: Text(
+                      "No comments yet",
+                    ),
+                  ),
+                ),
         ),
         Row(
           children: [
@@ -373,8 +397,7 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
             IconButton(
               onPressed: () {
                 addCommentToPost(postId);
-                messageController.clear();
-                setState(() {});
+                Navigator.pop(context);
               },
               icon: Container(
                 width: height(context) * 0.07,
@@ -437,13 +460,36 @@ class _StudentGroupDetailsState extends State<StudentGroupDetails> {
                   isTeacher: current_user.isTeacher)
               .toMap())
           .then((value) {
-        formKey.currentState!.reset();
-        comments.add(CommentModel(
-            comment: messageController.text.trim(),
-            userId: current_user.uid!,
-            isTeacher: current_user.isTeacher));
-        setState(() {});
+        setState(() {
+          messageController.clear();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Your Comment Added Successfully"),
+          ),
+        );
       });
     }
+  }
+
+  getComments(String postId) async {
+    comments.clear();
+    log("get comments");
+    await FirebaseFirestore.instance
+        .collection(groupsCollection)
+        .doc(widget.group.id)
+        .collection(postsCollection)
+        .doc(postId)
+        .collection(commentsCollection)
+        .get()
+        .then((value) {
+      log("comments length ${value.docs.length}");
+      for (var element in value.docs) {
+        log("adding comment ${element.data()}");
+        setState(() {
+          comments.add(CommentModel.fromMap(element.data()));
+        });
+      }
+    });
   }
 }

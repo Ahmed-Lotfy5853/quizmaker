@@ -4,10 +4,13 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:quiz_maker/Constants/Strings.dart';
 import 'package:quiz_maker/Constants/styles.dart';
+import 'package:quiz_maker/Data/Models/requests.dart';
 import '../../../../Constants/responsive.dart';
 import '../../../../Data/Models/group.dart';
 import '../Groups/teacher_group_details.dart';
@@ -28,6 +31,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
   List<Group> userGroupsList = [];
 
   TextEditingController _searchController = TextEditingController();
+  TextEditingController _joinController = TextEditingController();
   bool isSearch = false;
 
   final firebaseAuth = FirebaseAuth.instance;
@@ -146,38 +150,123 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
       padding: const EdgeInsets.all(2),
       child: Column(
         children: [
-          TextFormField(
-            style: TextStyle(color: nextColor),
-            controller: _searchController,
-            onChanged: (value) {
-              print(value);
-              setState(() {
-                isSearch = value.isNotEmpty;
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  style: TextStyle(color: nextColor),
+                  controller: _searchController,
+                  onChanged: (value) {
+                    print(value);
+                    setState(() {
+                      isSearch = value.isNotEmpty;
 
-                _searchresult = _searchMethed(value.toLowerCase());
-                //check user is searching or no
-                print("isSearching: $isSearch");
-              });
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: firstColor,
-              prefixIcon: Icon(
-                Icons.search,
-                color: nextColor,
+                      _searchresult = _searchMethed(value.toLowerCase());
+                      //check user is searching or no
+                      print("isSearching: $isSearch");
+                    });
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: firstColor,
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: nextColor,
+                    ),
+                    labelStyle: TextStyle(color: nextColor),
+                    hintText: 'Group Name',
+                    hintStyle: TextStyle(color: nextColor),
+
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Colors.transparent, width: 0.0)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent, width: 0.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
-              labelStyle: TextStyle(color: nextColor),
-              hintText: 'Search About Groups ...',
-              hintStyle: TextStyle(color: nextColor),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      BorderSide(color: Colors.transparent, width: 0.0)),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent, width: 0.0),
-                borderRadius: BorderRadius.circular(10),
+              Expanded(
+                child: TextFormField(
+                  style: TextStyle(color: nextColor),
+                  controller: _joinController,
+
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: firstColor,
+                    prefixIconConstraints: BoxConstraints(minWidth: 60.0, minHeight: 60.0),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: InkWell(
+                        onTap: ()async{
+                          FirebaseFirestore.instance.collection(groupsCollection).doc(_joinController.text).get().then((value) async {
+                           if(value.data() == null){
+                             ScaffoldMessenger.of(context).showSnackBar(
+                               const SnackBar(
+                                 content: Text('Group Not Found'),
+                               )
+                             );
+                           }
+                           else{
+                             Group dataGroup = Group.fromMap(value.data()!);
+                             await FirebaseFirestore.instance
+                                 .collection(teachersCollection)
+                                 .doc(dataGroup.teachers?[0])
+                                 .collection(current_user.isTeacher
+                                 ? teacherRequestsCollection
+                                 : studentRequestsCollection)
+                                 .add(Request(
+                               name: current_user.name,
+                               userId: current_user.uid,
+                               groupId: dataGroup.id!,
+                               isPending: true,
+                               id: '',
+                             ).toMap())
+                                 .then((value) {
+                               value.update({"id": value.id});
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 const SnackBar(
+                                   content: Text('Request Sent Successfully'),
+                                 ),
+                               );
+
+                               setState(() {
+                                 _joinController.clear();
+                               });
+                             });
+                           }
+                          });
+
+                        },
+                        child: Container(
+                          width: 25,
+                          alignment: Alignment.center,
+                          child: Text("Join",
+                            style: TextStyle(
+                            color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20
+                          ),),
+                        ),
+                      ),
+                    ),
+                    labelStyle: TextStyle(color: nextColor),
+                    hintText: 'Group ID',
+                    hintStyle: TextStyle(color: nextColor),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Colors.transparent, width: 0.0)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent, width: 0.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
           Expanded(
             child: _searchController.text.isEmpty
@@ -236,9 +325,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
             child: ListTile(
               leading: CircleAvatar(
                 radius: width * 0.07,
-                child: dataGroup[index].image == null
-                    ? Icon(Icons.groups, size: width / 10, color: Colors.white)
-                    : null,
+                backgroundImage: dataGroup[index].image != null
+                    ? NetworkImage(dataGroup[index].image!)
+                    : AssetImage(groupAsset) as ImageProvider,
               ),
               title: Text(
                 dataGroup[index].name,
@@ -283,12 +372,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
                   children: [
                     CircleAvatar(
                       radius: width / 12,
-                      backgroundImage:
-                          group.image != '' ? NetworkImage(group.image!) : null,
-                      child: group.image == ''
-                          ? Icon(Icons.groups,
-                              size: width / 7.5, color: Colors.white)
-                          : null,
+                      backgroundImage: group.image != null
+                          ? NetworkImage(group.image!)
+                          : AssetImage(groupAsset) as ImageProvider,
                     ),
                     Text(
                       group.name,
@@ -303,22 +389,52 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
                       ),
                     ),
                     if (!isInGroup) // Add the tile conditionally based on isInGroup
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Text(
-                                'Join',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                      InkWell(
+                        onTap: () async {
+                          await FirebaseFirestore.instance
+                              .collection(teachersCollection)
+                              .doc(group.teachers?[0])
+                              .collection(current_user.isTeacher
+                                  ? teacherRequestsCollection
+                                  : studentRequestsCollection)
+                              .add(Request(
+                                name: current_user.name,
+                                userId: current_user.uid,
+                                groupId: dataGroup[index].id!,
+                                isPending: true,
+                                id: '',
+                              ).toMap())
+                              .then((value) {
+                            value.update({"id": value.id});
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Request Sent Successfully'),
+                              ),
+                            );
+
+                            setState(() {
+                              _searchController.clear();
+                            });
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 5),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Text(
+                                  'Join',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),

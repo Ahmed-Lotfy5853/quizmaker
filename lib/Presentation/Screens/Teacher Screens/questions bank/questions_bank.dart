@@ -150,7 +150,7 @@ class _Questions_BankState extends State<Questions_Bank> {
                       questions.add(Question(
                           question: q!['question']!,
                           answers: answers,
-                          correctAnswer: q!['correctAnswer'] - 1 ?? 0,
+                          correctAnswer: (q!['correctAnswer'] -(answers.length>2?1:0) ) ?? 0,
                           level: q!['difficulty']!));
                     }
                   });

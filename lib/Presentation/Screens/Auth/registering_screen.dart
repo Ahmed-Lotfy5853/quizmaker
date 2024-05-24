@@ -24,9 +24,9 @@ class Register_Screen extends StatefulWidget {
 class _Register_ScreenState extends State<Register_Screen> {
   final login_form_key = GlobalKey<FormState>();
   final register_form_key = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 's@gmail.com');
+  final _emailController = TextEditingController(text: '');
   final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController(text: 'M12345678');
+  final _passwordController = TextEditingController(text: '');
   bool showPassword = true;
   bool isLogin = true;
   bool isTeacher = false;
@@ -50,7 +50,6 @@ class _Register_ScreenState extends State<Register_Screen> {
   @override
   void initState() {
     super.initState();
-    // BlocProvider.of<Auth_Cubit>(context).startCubit();
   }
 
   @override

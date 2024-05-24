@@ -12,6 +12,7 @@ import '../../../../Data/Models/exam_model.dart';
 import '../../../../Data/Models/group.dart';
 import '../../../../Data/Models/post_model.dart';
 import '../../../../Data/Models/user.dart';
+import '../../group_info_screen.dart';
 import '../posts/post_create.dart';
 import '../questions bank/create_quiz.dart';
 
@@ -64,23 +65,6 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
           for (var element in value.docs) {
             exams.add(ExamModel.fromMap(element.data()));
           }
-        });
-      }
-    });
-  }
-
-  getComments(String postId) async {
-    await FirebaseFirestore.instance
-        .collection(groupsCollection)
-        .doc(widget.group.id)
-        .collection(postsCollection)
-        .doc(postId)
-        .collection(commentsCollection)
-        .get()
-        .then((value) {
-      for (var element in value.docs) {
-        setState(() {
-          comments.add(CommentModel.fromMap(element.data()));
         });
       }
     });
@@ -153,6 +137,22 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
             widget.group.name,
             style: TextStyle(color: Colors.white),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: IconButton(
+                onPressed: () async {
+                  List<UserModel> teachersMembers = await getMembers(members: widget.group.teachers??[], type: teachersCollection);
+                  List<UserModel> studentsMembers = await getMembers(members: widget.group.students??[], type: studentsCollection);
+                  Navigator.push(context, MaterialPageRoute(builder: (_)=>GroupInfoScreen(groupName: widget.group.name, teachers: teachersMembers, students:studentsMembers,)));
+                },
+                icon: Icon(
+                  Icons.info_outline,
+                  color: Colors.white,
+                )
+              ),
+            )
+          ],
         ),
         floatingActionButton: SpeedDial(
           icon: Icons.menu,
@@ -161,7 +161,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                 child: Icon(Icons.edit),
                 label: 'Create post',
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (_) => PostCreate(
@@ -173,7 +173,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
               child: Icon(Icons.lightbulb_outline),
               label: 'Create a quiz',
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (_) => Create_Quiz(
@@ -186,7 +186,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                 child: Icon(Icons.settings),
                 label: 'Group Settings',
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (_) => GroupSettings(
@@ -303,23 +303,22 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                             )),
                         IconButton(
                             onPressed: () async {
-                              comments = [];
-                              await getComments(posts[index].id!).then((value) {
-                                showModalBottomSheet(
-                                  backgroundColor: Colors.white,
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (context) => Padding(
-                                    padding: EdgeInsets.only(
-                                        top: height(context) * 0.1),
-                                    child: commentTextField(
-                                      context,
-                                      comments,
-                                      posts[index].id!,
-                                    ),
+                              await getComments(posts[index].id!);
+                              showModalBottomSheet(
+                                backgroundColor: Colors.white,
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (context) => Padding(
+                                  padding: EdgeInsets.only(
+                                      top: height(context) * 0.1,
+                                      bottom: MediaQuery.of(context).viewInsets.bottom
                                   ),
-                                );
-                              });
+                                  child: commentTextField(
+                                    context,
+                                    posts[index].id!,
+                                  ),
+                                ),
+                              );
                             },
                             icon: Icon(Icons.chat)),
                       ],
@@ -334,9 +333,27 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
     );
   }
 
+   Future<List<UserModel>> getMembers({required List<String>members, required String type})  async{
+    List<UserModel> users = [UserModel(name: '', email: '', uid: '', photoUrl: '', isTeacher: true)];
+    for (String element in members) {
+  await    FirebaseFirestore.instance.collection(type).doc(element).get().then((value) {
+        UserModel user = UserModel.fromMap(value.data()!);
+        log("user name ${user.name}");
+        users.add(user);
+        log("user name ${(users).last.name}");
+        log("users length ${(users).length}");
+
+      });
+
+    }
+    return users;
+
+
+  }
+
   String formatDateString(String dateString) {
     DateTime dateTime = DateTime.parse(dateString);
-    String formattedDate = "${dateTime.month}/${dateTime.day}";
+    String formattedDate = "${dateTime.day}/${dateTime.month}";
     String formattedTime =
         "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
     String period = dateTime.hour < 12 ? 'am' : 'pm';
@@ -349,7 +366,7 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
     return "$formattedDate $formattedTime $period";
   }
 
-  Widget commentTextField(context, List<CommentModel> comments, String postId) {
+  Widget commentTextField(context, String postId) {
     log("comments $comments");
 
     /*
@@ -380,7 +397,11 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                     );
                   },
                 )
-              : Container(),
+              : Container(
+                  child: Center(
+                    child: Text("No Comments yet"),
+                  ),
+                ),
         ),
         Row(
           children: [
@@ -463,6 +484,27 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
     await getStudents(widget.group.students!);
   }
 
+  getComments(String postId) async {
+    comments.clear();
+    log("get comments");
+    await FirebaseFirestore.instance
+        .collection(groupsCollection)
+        .doc(widget.group.id)
+        .collection(postsCollection)
+        .doc(postId)
+        .collection(commentsCollection)
+        .get()
+        .then((value) {
+      log("comments length ${value.docs.length}");
+      for (var element in value.docs) {
+        log("adding comment ${element.data()}");
+        setState(() {
+          comments.add(CommentModel.fromMap(element.data()));
+        });
+      }
+    });
+  }
+
   void addCommentToPost(String postId) async {
     if (formKey.currentState!.validate()) {
       await FirebaseFirestore.instance
@@ -477,12 +519,14 @@ class _TeacherGroupDetailsState extends State<TeacherGroupDetails> {
                   isTeacher: current_user.isTeacher)
               .toMap())
           .then((value) {
-        formKey.currentState!.reset();
-        comments.add(CommentModel(
-            comment: messageController.text.trim(),
-            userId: current_user.uid!,
-            isTeacher: current_user.isTeacher));
-        setState(() {});
+        setState(() {
+          messageController.clear();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Your Comment Added Successfully"),
+          ),
+        );
       });
     }
   }

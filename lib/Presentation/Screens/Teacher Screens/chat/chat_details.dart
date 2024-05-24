@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../Constants/Strings.dart';
@@ -19,23 +22,22 @@ class _ChatDetailsState extends State<ChatDetails> {
   double width (BuildContext context,double width)=> MediaQuery.sizeOf(context).width*width;
   double textFontSize (BuildContext context,double fontSize)=> MediaQuery.textScalerOf(context).scale(fontSize);
 List<MessageModel> messages = [
-  MessageModel( message: 'Hi', time: '5:00', ),
-  MessageModel( message: 'Hi', time: '5:01', ),
-  MessageModel( message: 'Hi', time: '5:00', ),
-  MessageModel( message: 'Hi', time: '5:01', ),
-  MessageModel( message: 'Hi', time: '5:00', ),
-  MessageModel( message: 'Hi', time: '5:01', ),
-  MessageModel( message: 'Hi', time: '5:00', ),
-  MessageModel( message: 'Hi', time: '5:01', ),
-  MessageModel( message: 'Hi', time: '5:00', ),
-  MessageModel( message: 'Hi', time: '5:01', ),
-  MessageModel( message: 'Hi', time: '5:00', ),
-  MessageModel( message: 'Hi', time: '5:01', ),
-  MessageModel( message: 'Hi', time: '5:00', ),
-  MessageModel( message: 'Hi', time: '5:01', ),
-
 ];
   TextEditingController messageController = TextEditingController();
+@override
+  void initState() {
+    FirebaseFirestore.instance.collection(current_user.isTeacher?teachersCollection:studentsCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).collection("Messages").orderBy("time", descending: false).snapshots().listen((event) {
+ log('event ${event.docs.isNotEmpty}');
+  if(event.docs.isNotEmpty){
+    setState(() {
+      messages = event.docs.map((e) => MessageModel.fromMap(e.data())).toList();
+      log("messages length ${event.docs.length}");
+    });
+  }
+    });
+
+  super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -51,7 +53,7 @@ List<MessageModel> messages = [
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    image: AssetImage(widget.chat.user?.photoUrl??"assets/images/profile_place_holder.png"),
+                    image: widget.chat.user?.photoUrl!=null?NetworkImage(widget.chat.user!.photoUrl!):AssetImage("assets/images/profile_place_holder.png") as ImageProvider,
                     fit: BoxFit.fill
                 )
             ),
@@ -127,7 +129,57 @@ List<MessageModel> messages = [
                 )
               ),
             )),
-            IconButton(onPressed: (){}, icon: Container(
+            IconButton(onPressed: ()async {
+              MessageModel message = MessageModel(message: messageController.text.trim(), time: DateTime.now().toString(), isMe: true);
+              if(mounted){
+                setState(() {
+                  messages.add(MessageModel(message: messageController.text.trim(), time: DateTime.now().toString(), isMe: true));
+                });
+              }
+              messageController.clear();
+
+              if(current_user.isTeacher){
+              await  FirebaseFirestore.instance.collection(teachersCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).collection("Messages").add(message.toMap());
+              await  FirebaseFirestore.instance.collection(teachersCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).set({
+                "id":widget.chat.user!.uid,
+                "lastMessage":message.toMap(),
+              "user":widget.chat.user!.toMap(),
+              });
+              }
+              else{
+               await FirebaseFirestore.instance.collection(studentsCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).collection("Messages").add(message.toMap());
+               await FirebaseFirestore.instance.collection(studentsCollection).doc(current_user.uid).collection("Chats").doc(widget.chat.user!.uid).set({
+                 "id":widget.chat.user!.uid,
+                 "lastMessage":message.toMap(),
+                 "user":widget.chat.user!.toMap(),
+               });
+
+              }
+              message.isMe = false;
+
+              if(widget.chat.user!.isTeacher){
+              await  FirebaseFirestore.instance.collection(teachersCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).collection("Messages").add(message.toMap());
+              await  FirebaseFirestore.instance.collection(teachersCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).set({
+                "id":current_user.uid,
+                "lastMessage":message.toMap(),
+                "user":current_user.toMap(),
+              });
+              }
+              else{
+               await FirebaseFirestore.instance.collection(studentsCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).collection("Messages").add(message.toMap());
+               await FirebaseFirestore.instance.collection(studentsCollection).doc(widget.chat.user!.uid).collection("Chats").doc(current_user.uid).set({
+                 "id":current_user.uid,
+                 "lastMessage":message.toMap(),
+                 "user":current_user.toMap(),
+               });
+
+              }
+              message.isMe = true;
+
+
+
+
+            }, icon: Container(
                 width: height(context, 0.07),
                 height: height(context, 0.07),
                 decoration: BoxDecoration(
@@ -142,6 +194,7 @@ List<MessageModel> messages = [
   }
   Widget chatItem(MessageModel messageModel){
     bool isMe = messageModel.isMe??false;
+    log("is me ${isMe}");
     return Container(
       width: width(context, 1),
       padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
@@ -158,7 +211,7 @@ List<MessageModel> messages = [
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                      image: AssetImage(widget.chat.user?.photoUrl??"assets/images/profile_place_holder.png"),
+                      image: widget.chat.user?.photoUrl!=null?NetworkImage(widget.chat.user!.photoUrl!):AssetImage("assets/images/profile_place_holder.png") as ImageProvider,
                       fit: BoxFit.fill
                   )
               ),

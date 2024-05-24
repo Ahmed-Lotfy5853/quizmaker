@@ -1,4 +1,4 @@
-package com.example.quiz_maker
+package com.ahmedlotfy.quiz_maker
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterFragmentActivity
